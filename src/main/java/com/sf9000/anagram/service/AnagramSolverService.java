@@ -14,7 +14,10 @@ import java.util.stream.Collectors;
 @Component
 public class AnagramSolverService {
 
-    public List<String> solve(final String myPhrase) throws FileNotFoundException {
+    public List<String> solve(String myPhrase) throws FileNotFoundException {
+
+        //sanitize myPhrase
+        myPhrase = myPhrase.toLowerCase().replaceAll("[^a-z]", "");
 
         Map<String, Integer> equivalentSet = new HashMap<>();
         equivalentSet.put("a", 1);
@@ -215,7 +218,8 @@ public class AnagramSolverService {
             }
 
             if (isValidPhrase && (lengthOfReturnPhraseWithOutSpaces == lengthOfMyPhraseWithOutSpaces)) {
-                myReturnAnagram.add(myPossibleReturnPhrase);
+                //TODO: clean empty before get here
+                myReturnAnagram.add(myPossibleReturnPhrase.trim());
             }
 
         }
