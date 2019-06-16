@@ -1,6 +1,5 @@
 package com.sf9000.anagram.service;
 
-import javafx.beans.property.ReadOnlyLongWrapper;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -14,16 +13,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class AnagramSolverService {
-
-    //todo
-    /*
-    1. order each word from dictionary alphabetically
-    2. order anagram word alphabetically
-    3. compare values
-
-    note: pay attention to exceptions
-
-     */
 
     public List<String> solve(final String myPhrase) throws FileNotFoundException {
 
@@ -103,6 +92,9 @@ public class AnagramSolverService {
         }
 
         List<String> myAnagramList = new ArrayList<>();
+
+        Map<String, Integer> myPhraseCountHashMap = myPhraseHashMap(myPhraseCharArray);
+
         for (Map.Entry<String, Integer> dictionaryWord : dictionary.entrySet()) {
 
             int myAnd = mySumPhrase | dictionaryWord.getValue();
@@ -112,13 +104,11 @@ public class AnagramSolverService {
 
                 boolean isValidWord = true;
 
-                Map<String, Integer> phraseCountMap = new HashMap<>();
-
                 for (Map.Entry<String, Integer> entry : stringIntegerMap.entrySet()) {
 
                     String myLetter = entry.getKey();
 
-                    Integer myInteger = phraseCountMap.get(myLetter);
+                    Integer myInteger = myPhraseCountHashMap.get(myLetter);
 
                     if (myInteger!= null && entry.getValue() > myInteger) {
                         isValidWord = false;
@@ -138,93 +128,96 @@ public class AnagramSolverService {
 
         List<String> myAnagramListOrdered = myAnagramList.stream().sorted().collect(Collectors.toList());
 
-        myMagicMethod(myAnagramListOrdered, myReturnAnagram) ;
-
-        Map<String, Integer> phraseCountMap = null;
-
-        for(int i = 0; i<myAnagramListOrdered.size();i++){
-
-            String myReturnPhrase = "";
-
-            boolean isValidPhrase = true;
-
-            phraseCountMap = new HashMap<>();
-
-            for (char c : myPhraseCharArray) {
-                Integer myInteger = phraseCountMap.get(String.valueOf(c));
-                if (myInteger == null) {
-                    phraseCountMap.put(String.valueOf(c), 1);
-                } else {
-                    phraseCountMap.put(String.valueOf(c), ++myInteger);
-                }
-
-            }
-
-            for(int j = i; j<myAnagramListOrdered.size();j++){
-
-                String myWordFromAnagram = myAnagramListOrdered.get(j);
-
-                //is valid word?
-                Map<String, Integer> stringIntegerMap = dictionaryCountLetter.get(myWordFromAnagram);
-
-                boolean isValidWord = true;
-
-                for (Map.Entry<String, Integer> entry : stringIntegerMap.entrySet()) {
-
-                    String myLetter = entry.getKey();
-
-                    Integer myInteger = phraseCountMap.get(myLetter);
-
-                    if (entry.getValue() > myInteger) {
-                        isValidWord = false;
-                    }
-
-                }
-
-                if (isValidWord) {
-                    myReturnPhrase = myReturnPhrase + " " + myWordFromAnagram;
-
-                    char[] myWordFromAnagramCharArray = myWordFromAnagram.toCharArray();
-
-                    for (char c : myWordFromAnagramCharArray) {
-
-                        Integer myInteger = phraseCountMap.get(String.valueOf(c));
-                        if (myInteger != null) {
-                            phraseCountMap.put(String.valueOf(c), --myInteger);
-                        }
-
-                    }
-                }
-
-            }
-
-            for (Map.Entry<String, Integer> dictionaryWord : phraseCountMap.entrySet()) {
-
-                System.out.println(dictionaryWord.getKey() + ":" + dictionaryWord.getValue());
-
-                Integer myInteger = dictionaryWord.getValue();
-                if (myInteger != 0) {
-                    isValidPhrase = false;
-                }
-
-            }
-
-            if (isValidPhrase) {
-                myReturnAnagram.add(myReturnPhrase);
-            }
-
-        }
+        myMagicMethod(myAnagramListOrdered, myReturnAnagram, 0, "", dictionaryCountLetter, myPhrase) ;
 
         return myReturnAnagram;
 
 
     }
 
-    private void myMagicMethod(List<String> myAnagramListOrdered, List<String> myReturnAnagram) {
+    private Map<String, Integer> myPhraseHashMap(char[] myPhraseCharArray) {
+        Map<String, Integer> phraseCountMap;
+        phraseCountMap = new HashMap<>();
 
+        for (char c : myPhraseCharArray) {
+            Integer myInteger = phraseCountMap.get(String.valueOf(c));
+            if (myInteger == null) {
+                phraseCountMap.put(String.valueOf(c), 1);
+            } else {
+                phraseCountMap.put(String.valueOf(c), ++myInteger);
+            }
 
-
-
+        }
+        return phraseCountMap;
     }
 
+    private void myMagicMethod(
+            List<String> myAnagramListOrdered,
+            List<String> myReturnAnagram,
+            Integer starterLoop,
+            String myReturnPhrase,
+            Map<String, Map<String, Integer>> dictionaryCountLetter,
+            String myPhrase) {
+
+        for (int i = starterLoop; i < myAnagramListOrdered.size(); i++) {
+
+            String myWordFromAnagram = myAnagramListOrdered.get(i);
+
+            boolean isValidWord = true;
+
+            String myPossibleReturnPhrase = myReturnPhrase;
+
+            Map<String, Integer> stringIntegerMap = dictionaryCountLetter.get(myWordFromAnagram);
+
+            Map<String, Integer> phraseCountMap = myPhraseHashMap(myPhrase.toCharArray());
+
+            for (Map.Entry<String, Integer> entry : stringIntegerMap.entrySet()) {
+
+                String myLetter = entry.getKey();
+
+                Integer myInteger = phraseCountMap.get(myLetter);
+
+                if (entry.getValue() > myInteger) {
+                    isValidWord = false;
+                }
+
+            }
+
+            if (isValidWord) {
+
+                myPossibleReturnPhrase = myPossibleReturnPhrase + " " + myWordFromAnagram;
+
+                char[] myWordFromAnagramCharArray = myPossibleReturnPhrase.replaceAll(" ","").toCharArray();
+
+                for (char c : myWordFromAnagramCharArray) {
+
+                    Integer myInteger = phraseCountMap.get(String.valueOf(c));
+                    if (myInteger != null) {
+                        phraseCountMap.put(String.valueOf(c), --myInteger);
+                    }
+                }
+            }
+
+            boolean isValidPhrase = true;
+
+            for (Map.Entry<String, Integer> phraseCountEntry : phraseCountMap.entrySet()) {
+                Integer myInteger = phraseCountEntry.getValue();
+                if (myInteger > 0) {
+                    isValidPhrase = false;
+                }
+            }
+
+            int lengthOfReturnPhraseWithOutSpaces = myPossibleReturnPhrase.replaceAll(" ", "").length();
+            int lengthOfMyPhraseWithOutSpaces = myPhrase.replaceAll(" ", "").length();
+
+            if(lengthOfReturnPhraseWithOutSpaces < lengthOfMyPhraseWithOutSpaces-2) {
+                myMagicMethod(myAnagramListOrdered, myReturnAnagram, i + 1, myPossibleReturnPhrase, dictionaryCountLetter, myPhrase);
+            }
+
+            if (isValidPhrase && (lengthOfReturnPhraseWithOutSpaces == lengthOfMyPhraseWithOutSpaces)) {
+                myReturnAnagram.add(myPossibleReturnPhrase);
+            }
+
+        }
+    }
 }

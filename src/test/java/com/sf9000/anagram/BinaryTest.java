@@ -4,6 +4,7 @@ package com.sf9000.anagram;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -71,6 +72,63 @@ public class BinaryTest {
         System.out.println(Integer.toBinaryString(myPhraseSum));
 
 
+
+    }
+
+
+    @Test
+    public void testWithArray(){
+
+        String myPhrase = "bestsecret";
+
+        List<String> dictionary = new ArrayList<>();
+        dictionary.add("beets");
+        dictionary.add("beset");
+        dictionary.add("crest");
+        dictionary.add("crete");
+        dictionary.add("better");
+        dictionary.add("cess");
+        dictionary.add("betters");
+        dictionary.add("sec");
+
+        int[] letters = new int[1<<8];
+
+        for(char c : myPhrase.toCharArray()){
+            letters[c]++;
+        }
+
+        boolean isFoundAllChars = false;
+
+        for (int a = 0; a < dictionary.size() && !isFoundAllChars; a++) {
+
+            String dictionaryWord = dictionary.get(a);
+
+            for(char c : dictionaryWord.toCharArray()){
+                letters[c]--;
+            }
+
+            int sumLetters = 0;
+            for(int i : letters){
+                if(i<0) {
+                    System.out.println("menor que zero");
+                } else {
+
+                }
+                sumLetters = sumLetters + i;
+
+
+            }
+
+            if (sumLetters==0){
+                isFoundAllChars = true;
+                System.out.println("achou");
+                System.out.print(dictionary.get(a));
+            } else {
+                System.out.println(a + ":" + sumLetters);
+                System.out.println(dictionary.get(a));
+            }
+
+        }
 
     }
 

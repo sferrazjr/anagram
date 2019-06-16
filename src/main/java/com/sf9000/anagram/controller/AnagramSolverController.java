@@ -7,7 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.zip.DataFormatException;
 
 @RestController
 @RequestMapping(value = "/anagram")
@@ -18,12 +21,21 @@ public class AnagramSolverController {
 
     @RequestMapping("/solve/{word}")
     @ResponseBody
-    List<String> solve(@PathVariable String word){
+    List<String> solve(@PathVariable String word) {
+        Calendar calendar = null;
+        long startTimeStamp = 0;
         try {
+            calendar = new GregorianCalendar();
+            startTimeStamp = calendar.getTimeInMillis();
+
             return anagramSolverService.solve(word);
+
+
         } catch (Exception e) {
             //TODO return HTTP 400 when word is not valid
             e.printStackTrace();
+        } finally {
+            System.out.println(new GregorianCalendar().getTimeInMillis() - startTimeStamp);
         }
         return null;
     }
