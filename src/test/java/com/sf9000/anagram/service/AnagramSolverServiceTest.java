@@ -67,7 +67,7 @@ public class AnagramSolverServiceTest {
 
     @Test
     @DisplayName("Test phrase 'Best Secret' should return array with 16 elements")
-    public void testPhraseBestSecret() throws FileNotFoundException {
+    public void testPhraseBestSecret() {
 
         //GIVEN
         String phraseBestSecret = "Best Secret";
@@ -83,7 +83,7 @@ public class AnagramSolverServiceTest {
 
     @Test
     @DisplayName("Test phrase 'IT-Crowd' has special character should return array with 5 elements")
-    public void testPhraseITCrowd() throws FileNotFoundException {
+    public void testPhraseITCrowd() {
 
         //GIVEN
         String phraseIT_Crowd = "IT-Crowd";
@@ -99,7 +99,7 @@ public class AnagramSolverServiceTest {
 
     @Test
     @DisplayName("Test phrase 'Aschheim' should return an array with 7 elements")
-    public void testPhraseAschheim() throws FileNotFoundException {
+    public void testPhraseAschheim() {
 
         //GIVEN
         String phraseAschheim = "Aschheim";
@@ -114,7 +114,7 @@ public class AnagramSolverServiceTest {
 
     @Test
     @DisplayName("Test phrase 'IT Crowd' has word smaller than 3 chars should return array with 5 elements")
-    public void testPhraseWithWordsSmallerThan3Chars() throws FileNotFoundException {
+    public void testPhraseWithWordsSmallerThan3Chars() {
         //GIVEN
         String phraseIT_Crowd = "IT Crowd";
 
@@ -128,7 +128,7 @@ public class AnagramSolverServiceTest {
 
     @Test
     @DisplayName("Test phrase IT is smaller than 3 chars should return an array with 0 elements")
-    public void testPhraseWithOnlyOneWordSmallerThan3Chars() throws FileNotFoundException {
+    public void testPhraseWithOnlyOneWordSmallerThan3Chars() {
         //GIVEN
         String phraseIT = "IT";
 
@@ -141,7 +141,7 @@ public class AnagramSolverServiceTest {
 
     @Test
     @DisplayName("Test phrase 'Best Sec ret' has more than 2 words should return an array with 16 elements")
-    public void testPhraseWithMoreThan2Words() throws FileNotFoundException {
+    public void testPhraseWithMoreThan2Words() {
         //GIVEN
         String phraseBestSecret = "Best Sec ret";
 
