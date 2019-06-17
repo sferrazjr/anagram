@@ -15,25 +15,25 @@ public class AnagramSolverService {
 
     private DictionaryRepository dictionaryRepository = DictionaryRepository.getInstance();
 
-    public List<String> solve(String myPhrase) {
+    public List<String> solve(String phrase) {
 
         //sanitize myPhrase
-        myPhrase = myPhrase.toLowerCase().replaceAll("[^a-z]", "");
+        phrase = phrase.toLowerCase().replaceAll("[^a-z]", "");
 
         Map<String, Integer> dictionary = dictionaryRepository.getDictionary();
 
-        Map<String, Map<String, Integer>> dictionaryCountLetter = dictionaryRepository.getDictionaryCountLetter();
+        Map<String, Map<Character, Integer>> dictionaryCountLetter = dictionaryRepository.getDictionaryCountLetter();
 
         int phraseInBinary = 0;
 
-        for (char letter : myPhrase.toCharArray()) {
+        for (char letter : phrase.toCharArray()) {
             Integer binaryEquivalent = BinaryEquivalency.BINARY_EQUIVALENCY.get(letter);
             phraseInBinary = phraseInBinary | binaryEquivalent;
         }
 
         List<String> myAnagramList = new ArrayList<>();
 
-        Map<String, Integer> myPhraseCountHashMap = myPhraseHashMap(myPhrase.toCharArray());
+        Map<Character, Integer> myPhraseCountHashMap = countLetterOfPhrase(phrase.toCharArray());
 
         for (Map.Entry<String, Integer> dictionaryWord : dictionary.entrySet()) {
 
@@ -41,13 +41,13 @@ public class AnagramSolverService {
 
             if ((myAnd ^ phraseInBinary) == 0) {
 
-                Map<String, Integer> stringIntegerMap = dictionaryCountLetter.get(dictionaryWord.getKey());
+                Map<Character, Integer> stringIntegerMap = dictionaryCountLetter.get(dictionaryWord.getKey());
 
                 boolean isValidWord = true;
 
-                for (Map.Entry<String, Integer> entry : stringIntegerMap.entrySet()) {
+                for (Map.Entry<Character, Integer> entry : stringIntegerMap.entrySet()) {
 
-                    String myLetter = entry.getKey();
+                    Character myLetter = entry.getKey();
 
                     Integer myInteger = myPhraseCountHashMap.get(myLetter);
 
@@ -60,32 +60,28 @@ public class AnagramSolverService {
                 if(isValidWord){
                     myAnagramList.add(dictionaryWord.getKey());
                 }
-
             }
-
-
         }
+
         List<String> myReturnAnagram = new ArrayList<>();
 
         List<String> myAnagramListOrdered = myAnagramList.stream().sorted().collect(Collectors.toList());
 
-        myMagicMethod(myAnagramListOrdered, myReturnAnagram, 0, "", dictionaryCountLetter, myPhrase) ;
+        myMagicMethod(myAnagramListOrdered, myReturnAnagram, 0, "", dictionaryCountLetter, phrase) ;
 
         return myReturnAnagram;
 
-
     }
 
-    private Map<String, Integer> myPhraseHashMap(char[] myPhraseCharArray) {
-        Map<String, Integer> phraseCountMap;
-        phraseCountMap = new HashMap<>();
+    private Map<Character, Integer> countLetterOfPhrase(char[] phraseCharArray) {
+        Map<Character, Integer> phraseCountMap = new HashMap<>();
 
-        for (char c : myPhraseCharArray) {
-            Integer myInteger = phraseCountMap.get(String.valueOf(c));
-            if (myInteger == null) {
-                phraseCountMap.put(String.valueOf(c), 1);
+        for (char letter : phraseCharArray) {
+            Integer letterCount = phraseCountMap.get(letter);
+            if (letterCount == null) {
+                phraseCountMap.put(letter, 1);
             } else {
-                phraseCountMap.put(String.valueOf(c), ++myInteger);
+                phraseCountMap.put(letter, ++letterCount);
             }
 
         }
@@ -97,7 +93,7 @@ public class AnagramSolverService {
             List<String> myReturnAnagram,
             Integer starterLoop,
             String myReturnPhrase,
-            Map<String, Map<String, Integer>> dictionaryCountLetter,
+            Map<String, Map<Character, Integer>> dictionaryCountLetter,
             String myPhrase) {
 
         for (int i = starterLoop; i < myAnagramListOrdered.size(); i++) {
@@ -108,13 +104,13 @@ public class AnagramSolverService {
 
             String myPossibleReturnPhrase = myReturnPhrase;
 
-            Map<String, Integer> stringIntegerMap = dictionaryCountLetter.get(myWordFromAnagram);
+            Map<Character, Integer> stringIntegerMap = dictionaryCountLetter.get(myWordFromAnagram);
 
-            Map<String, Integer> phraseCountMap = myPhraseHashMap(myPhrase.toCharArray());
+            Map<Character, Integer> phraseCountMap = countLetterOfPhrase(myPhrase.toCharArray());
 
-            for (Map.Entry<String, Integer> entry : stringIntegerMap.entrySet()) {
+            for (Map.Entry<Character, Integer> entry : stringIntegerMap.entrySet()) {
 
-                String myLetter = entry.getKey();
+                Character myLetter = entry.getKey();
 
                 Integer myInteger = phraseCountMap.get(myLetter);
 
@@ -132,16 +128,16 @@ public class AnagramSolverService {
 
                 for (char c : myWordFromAnagramCharArray) {
 
-                    Integer myInteger = phraseCountMap.get(String.valueOf(c));
+                    Integer myInteger = phraseCountMap.get(c);
                     if (myInteger != null) {
-                        phraseCountMap.put(String.valueOf(c), --myInteger);
+                        phraseCountMap.put(c, --myInteger);
                     }
                 }
             }
 
             boolean isValidPhrase = true;
 
-            for (Map.Entry<String, Integer> phraseCountEntry : phraseCountMap.entrySet()) {
+            for (Map.Entry<Character, Integer> phraseCountEntry : phraseCountMap.entrySet()) {
                 Integer myInteger = phraseCountEntry.getValue();
                 if (myInteger > 0) {
                     isValidPhrase = false;

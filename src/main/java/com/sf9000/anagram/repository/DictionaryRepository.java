@@ -27,7 +27,7 @@ public class DictionaryRepository {
         return dictionary;
     }
 
-    public Map<String, Map<String, Integer>> getDictionaryCountLetter() {
+    public Map<String, Map<Character, Integer>> getDictionaryCountLetter() {
         return dictionaryCountLetter;
     }
 
@@ -35,7 +35,7 @@ public class DictionaryRepository {
 
     private static Map<String, Integer> dictionary = new HashMap<>();
 
-    private static Map<String, Map<String, Integer>> dictionaryCountLetter = new HashMap<>();
+    private static Map<String, Map<Character, Integer>> dictionaryCountLetter = new HashMap<>();
 
     private void loadDictionary() {
 
@@ -56,13 +56,13 @@ public class DictionaryRepository {
                             wordInBinary = wordInBinary | binaryEquivalent;
                             dictionary.put(dictionaryWord, wordInBinary);
 
-                            Map<String, Integer> stringIntegerMap = dictionaryCountLetter.get(dictionaryWord);
+                            Map<Character, Integer> letterCountMap = dictionaryCountLetter.get(dictionaryWord);
 
-                            Integer letterCount = stringIntegerMap.get(String.valueOf(letter));
+                            Integer letterCount = letterCountMap.get(letter);
                             if (letterCount == null) {
-                                stringIntegerMap.put(String.valueOf(letter), 1);
+                                letterCountMap.put(letter, 1);
                             } else {
-                                stringIntegerMap.put(String.valueOf(letter), ++letterCount);
+                                letterCountMap.put(letter, ++letterCount);
                             }
                         }
                     }
