@@ -15,8 +15,8 @@ public class DictionaryRepository {
         loadDictionary();
     }
 
-    public static DictionaryRepository getInstance(){
-        if(dictionaryRepository==null){
+    public static DictionaryRepository getInstance() {
+        if (dictionaryRepository == null) {
             dictionaryRepository = new DictionaryRepository();
         }
 

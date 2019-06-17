@@ -50,13 +50,13 @@ public class AnagramSolverService {
 
                     Integer letterCounter = phraseCountLetterMap.get(dictionaryLetter);
 
-                    if (letterCounter!= null && entry.getValue() > letterCounter) {
+                    if (letterCounter != null && entry.getValue() > letterCounter) {
                         isValidWord = false;
                     }
 
                 }
 
-                if(isValidWord){
+                if (isValidWord) {
                     anagramWordList.add(dictionaryWord.getKey());
                 }
             }
@@ -127,7 +127,7 @@ public class AnagramSolverService {
 
                 possibleReturnPhrase = possibleReturnPhrase + " " + anagramWord;
 
-                char[] possibleReturnPhraseCharArray = possibleReturnPhrase.replaceAll(" ","").toCharArray();
+                char[] possibleReturnPhraseCharArray = possibleReturnPhrase.replaceAll(" ", "").toCharArray();
 
                 for (char possibleReturnPhraseLetter : possibleReturnPhraseCharArray) {
 
@@ -150,7 +150,7 @@ public class AnagramSolverService {
             int lengthOfReturnPhraseWithOutSpaces = possibleReturnPhrase.replaceAll(" ", "").length();
             int lengthOfMyPhraseWithOutSpaces = phrase.replaceAll(" ", "").length();
 
-            if(lengthOfReturnPhraseWithOutSpaces < lengthOfMyPhraseWithOutSpaces-2) {
+            if (lengthOfReturnPhraseWithOutSpaces < lengthOfMyPhraseWithOutSpaces - 2) {
                 findAnagram(anagramWordListOrdered, anagramList, i + 1, possibleReturnPhrase, dictionaryCountLetter, phrase);
             }
 
