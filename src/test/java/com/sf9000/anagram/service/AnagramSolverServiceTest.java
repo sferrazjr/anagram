@@ -10,7 +10,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -67,7 +66,7 @@ public class AnagramSolverServiceTest {
     }
 
     @Test
-    @DisplayName("Test phrase 'Best Secret'")
+    @DisplayName("Test phrase 'Best Secret' should return array with 16 elements")
     public void testPhraseBestSecret() throws FileNotFoundException {
 
         //GIVEN
@@ -83,7 +82,7 @@ public class AnagramSolverServiceTest {
     }
 
     @Test
-    @DisplayName("Test phrase 'IT-Crowd' with special character")
+    @DisplayName("Test phrase 'IT-Crowd' has special character should return array with 5 elements")
     public void testPhraseITCrowd() throws FileNotFoundException {
 
         //GIVEN
@@ -99,7 +98,7 @@ public class AnagramSolverServiceTest {
     }
 
     @Test
-    @DisplayName("Test phrase 'Aschheim'")
+    @DisplayName("Test phrase 'Aschheim' should return an array with 7 elements")
     public void testPhraseAschheim() throws FileNotFoundException {
 
         //GIVEN
@@ -114,21 +113,44 @@ public class AnagramSolverServiceTest {
     }
 
     @Test
-    @DisplayName("Test phrase with words smaller than 3 characters")
-    public void testPhraseWithWordsSmallerThan3Chars(){
-        fail("not implemented yet");
+    @DisplayName("Test phrase 'IT Crowd' has word smaller than 3 chars should return array with 5 elements")
+    public void testPhraseWithWordsSmallerThan3Chars() throws FileNotFoundException {
+        //GIVEN
+        String phraseIT_Crowd = "IT Crowd";
+
+        //WHEN
+        List<String> anagramSolution = anagramSolverService.solve(phraseIT_Crowd);
+
+        //THEN
+        assertEquals(5, anagramSolution.size());
+        assertArrayEquals(anagramIT_Crowd.toArray(), anagramSolution.toArray());
     }
 
     @Test
-    @DisplayName("Test phrase with only one word smaller than 3 characters")
-    public void testPhraseWithOnlyOneWordSmallerThan3Chars(){
-        fail("not implemented yet");
+    @DisplayName("Test phrase IT is smaller than 3 chars should return an array with 0 elements")
+    public void testPhraseWithOnlyOneWordSmallerThan3Chars() throws FileNotFoundException {
+        //GIVEN
+        String phraseIT = "IT";
+
+        //WHEN
+        List<String> anagramSolution = anagramSolverService.solve(phraseIT);
+
+        //THEN
+        assertEquals(0, anagramSolution.size());
     }
 
     @Test
-    @DisplayName("Test phrase with more than 2 words")
-    public void testPhraseWithMoreThan2Words(){
-        fail("not implemented yet");
+    @DisplayName("Test phrase 'Best Sec ret' has more than 2 words should return an array with 16 elements")
+    public void testPhraseWithMoreThan2Words() throws FileNotFoundException {
+        //GIVEN
+        String phraseBestSecret = "Best Sec ret";
+
+        //WHEN
+        List<String> anagramSolution = anagramSolverService.solve(phraseBestSecret);
+
+        //THEN
+        assertEquals(16, anagramSolution.size());
+        assertArrayEquals(anagramBestSecret.toArray(), anagramSolution.toArray());
     }
 
 }

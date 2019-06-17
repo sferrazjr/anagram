@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.zip.DataFormatException;
 
 @RestController
 @RequestMapping(value = "/anagram")
