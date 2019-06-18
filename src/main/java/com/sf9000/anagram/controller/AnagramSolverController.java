@@ -57,7 +57,10 @@ public class AnagramSolverController {
                     .body(e.getMessage());
 
         } finally {
-            System.out.println(new GregorianCalendar().getTimeInMillis() - startTimeStamp);
+
+            double timeElapsed = (new GregorianCalendar().getTimeInMillis() - startTimeStamp) / 1000.0;
+
+            System.out.printf("Anagrams of %s found in %.3f seconds.\n", word, timeElapsed);
         }
 
     }
