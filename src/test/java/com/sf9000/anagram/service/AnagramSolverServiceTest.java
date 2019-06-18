@@ -148,6 +148,5 @@ public class AnagramSolverServiceTest {
         //THEN
         assertEquals(0, anagramSolution.size());
     }
-
-
+    
 }

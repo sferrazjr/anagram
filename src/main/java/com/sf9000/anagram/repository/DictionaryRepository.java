@@ -3,7 +3,6 @@ package com.sf9000.anagram.repository;
 
 import com.sf9000.anagram.model.BinaryEquivalency;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
@@ -23,18 +22,16 @@ public class DictionaryRepository {
 
     private Map<String, Map<Character, Integer>> dictionaryCountLetter = new HashMap<>();
 
-    @Cacheable("dictionary")
     public Map<String, Integer> getDictionary() {
         return dictionary;
     }
 
-    @Cacheable("dictionaryCountLetter")
     public Map<String, Map<Character, Integer>> getDictionaryCountLetter() {
         return dictionaryCountLetter;
     }
 
     @PostConstruct
-    private void init() {
+    private void init() throws Exception {
 
         ClassLoader classLoader = getClass().getClassLoader();
         try (Scanner scanner = new Scanner(new File(classLoader.getResource(fileName).getFile()))) {
@@ -65,9 +62,9 @@ public class DictionaryRepository {
                     }
                 }
             }
-        } catch (FileNotFoundException e) {
-            //FIXME: MISSING ERROR MESSAGE
-            e.printStackTrace();
+        } catch (FileNotFoundException fileNotFoundException) {
+            fileNotFoundException.printStackTrace();
+            throw fileNotFoundException;
         }
 
     }
