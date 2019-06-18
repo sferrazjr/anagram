@@ -2,42 +2,35 @@ package com.sf9000.anagram.repository;
 
 
 import com.sf9000.anagram.model.BinaryEquivalency;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+@Repository
 public class DictionaryRepository {
 
-    private DictionaryRepository() {
-        loadDictionary();
-    }
+    private Map<String, Integer> dictionary = new HashMap<>();
 
-    public static DictionaryRepository getInstance() {
-        if (dictionaryRepository == null) {
-            dictionaryRepository = new DictionaryRepository();
-        }
+    private Map<String, Map<Character, Integer>> dictionaryCountLetter = new HashMap<>();
 
-        return dictionaryRepository;
-    }
-
+    @Cacheable("dictionary")
     public Map<String, Integer> getDictionary() {
         return dictionary;
     }
 
+    @Cacheable("dictionaryCountLetter")
     public Map<String, Map<Character, Integer>> getDictionaryCountLetter() {
         return dictionaryCountLetter;
     }
 
-    private static DictionaryRepository dictionaryRepository;
-
-    private static Map<String, Integer> dictionary = new HashMap<>();
-
-    private static Map<String, Map<Character, Integer>> dictionaryCountLetter = new HashMap<>();
-
-    private void loadDictionary() {
+    @PostConstruct
+    private void init() {
 
         ClassLoader classLoader = getClass().getClassLoader();
         try (Scanner scanner = new Scanner(new File(classLoader.getResource("anagramDic.txt").getFile()))) {

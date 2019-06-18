@@ -1,14 +1,18 @@
 package com.sf9000.anagram.service;
 
+import com.sf9000.anagram.repository.DictionaryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,113 +22,119 @@ public class AnagramSolverServiceTest {
     @InjectMocks
     AnagramSolverService anagramSolverService;
 
-    List<String> anagramBestSecret;
-    List<String> anagramIT_Crowd;
-    List<String> anagramAschheim;
+    @Mock
+    DictionaryRepository dictionaryRepository;
 
-    {
-        anagramBestSecret = new ArrayList<>();
-        anagramBestSecret.add("beet crests");
-        anagramBestSecret.add("beets crest");
-        anagramBestSecret.add("beret sects");
-        anagramBestSecret.add("berets sect");
-        anagramBestSecret.add("beset crest");
-        anagramBestSecret.add("best erects");
-        anagramBestSecret.add("best secret");
-        anagramBestSecret.add("bests crete");
-        anagramBestSecret.add("bests erect");
-        anagramBestSecret.add("bet erst sec");
-        anagramBestSecret.add("bet rest sec");
-        anagramBestSecret.add("bet secrets");
-        anagramBestSecret.add("bets erects");
-        anagramBestSecret.add("bets secret");
-        anagramBestSecret.add("better cess");
-        anagramBestSecret.add("betters sec");
-
-        anagramIT_Crowd = new ArrayList<>();
-        anagramIT_Crowd.add("cod writ");
-        anagramIT_Crowd.add("cord wit");
-        anagramIT_Crowd.add("cow dirt");
-        anagramIT_Crowd.add("doc writ");
-        anagramIT_Crowd.add("tic word");
-
-        anagramAschheim = new ArrayList<>();
-        anagramAschheim.add("aches him");
-        anagramAschheim.add("ash chime");
-        anagramAschheim.add("chase him");
-        anagramAschheim.add("chime has");
-        anagramAschheim.add("hash mice");
-        anagramAschheim.add("hic shame");
-        anagramAschheim.add("mice shah");
-
-    }
-
+    List<String> anagramBest;
 
     @BeforeEach
     public void init() {
         MockitoAnnotations.initMocks(this);
+
+        anagramBest = new ArrayList<>();
+        anagramBest.add("best");
+        anagramBest.add("bets");
+
+        Map<String, Integer> dictionary = new HashMap<>();
+        dictionary.put("best",786450);
+        dictionary.put("bets",786450);
+
+        Mockito.when(dictionaryRepository.getDictionary())
+                .thenReturn(dictionary);
+
+        Map<String, Map<Character, Integer>> dictionaryCountLetter = new HashMap<>();
+        Map<Character, Integer> bestCountLetters = new HashMap<>();
+        bestCountLetters.put('b',1);
+        bestCountLetters.put('e',1);
+        bestCountLetters.put('s',1);
+        bestCountLetters.put('t',1);
+        dictionaryCountLetter.put("best", bestCountLetters);
+        dictionaryCountLetter.put("bets", bestCountLetters);
+
+        Mockito.when(dictionaryRepository.getDictionaryCountLetter())
+                .thenReturn(dictionaryCountLetter);
     }
 
     @Test
-    @DisplayName("Test phrase 'Best Secret' should return array with 16 elements")
+    @DisplayName("Test phrase 'best' should return array with elements best and bets")
     public void testPhraseBestSecret() {
 
         //GIVEN
-        String phraseBestSecret = "Best Secret";
+        String phrase = "best";
 
         //WHEN
-        List<String> anagramSolution = anagramSolverService.solve(phraseBestSecret);
+        List<String> anagramSolution = anagramSolverService.solve(phrase);
 
         //THEN
-        assertEquals(16, anagramSolution.size());
-        assertArrayEquals(anagramBestSecret.toArray(), anagramSolution.toArray());
+        assertEquals(2, anagramSolution.size());
+        assertArrayEquals(anagramBest.toArray(), anagramSolution.toArray());
 
     }
 
     @Test
-    @DisplayName("Test phrase 'IT-Crowd' has special character should return array with 5 elements")
+    @DisplayName("Test phrase 'b-+est' has special characters should return same as best")
     public void testPhraseITCrowd() {
 
         //GIVEN
-        String phraseIT_Crowd = "IT-Crowd";
+        String phrase = "b-+est";
 
         //WHEN
-        List<String> anagramSolution = anagramSolverService.solve(phraseIT_Crowd);
+        List<String> anagramSolution = anagramSolverService.solve(phrase);
 
         //THEN
-        assertEquals(5, anagramSolution.size());
-        assertArrayEquals(anagramIT_Crowd.toArray(), anagramSolution.toArray());
+        assertEquals(2, anagramSolution.size());
+        assertArrayEquals(anagramBest.toArray(), anagramSolution.toArray());
 
     }
 
     @Test
-    @DisplayName("Test phrase 'Aschheim' should return an array with 7 elements")
-    public void testPhraseAschheim() {
+    @DisplayName("Test phrase 'BEst' has upper case characters should return same as best")
+    public void testPhraseBestWithUpperCase() {
 
         //GIVEN
-        String phraseAschheim = "Aschheim";
+        String phrase = "BEst";
 
         //WHEN
-        List<String> anagramSolution = anagramSolverService.solve(phraseAschheim);
+        List<String> anagramSolution = anagramSolverService.solve(phrase);
 
         //THEN
-        assertEquals(7, anagramSolution.size());
-        assertArrayEquals(anagramAschheim.toArray(), anagramSolution.toArray());
+        assertEquals(2, anagramSolution.size());
+        assertArrayEquals(anagramBest.toArray(), anagramSolution.toArray());
+
     }
 
     @Test
-    @DisplayName("Test phrase 'IT Crowd' has word smaller than 3 chars should return array with 5 elements")
-    public void testPhraseWithWordsSmallerThan3Chars() {
+    @DisplayName("Test phrase 'BEs*t' has upper case and special characters should return same as best")
+    public void testPhraseBestWithUpperCaseAndSpecialCharacter() {
+
         //GIVEN
-        String phraseIT_Crowd = "IT Crowd";
+        String phrase = "BEs*t";
 
         //WHEN
-        List<String> anagramSolution = anagramSolverService.solve(phraseIT_Crowd);
+        List<String> anagramSolution = anagramSolverService.solve(phrase);
 
         //THEN
-        assertEquals(5, anagramSolution.size());
-        assertArrayEquals(anagramIT_Crowd.toArray(), anagramSolution.toArray());
+        assertEquals(2, anagramSolution.size());
+        assertArrayEquals(anagramBest.toArray(), anagramSolution.toArray());
+
     }
+
+    @Test
+    @DisplayName("Test phrase 'B E st' with space should return same as best")
+    public void spacesShouldNotBeConsidered() {
+
+        //GIVEN
+        String phrase = "B E st";
+
+        //WHEN
+        List<String> anagramSolution = anagramSolverService.solve(phrase);
+
+        //THEN
+        assertEquals(2, anagramSolution.size());
+        assertArrayEquals(anagramBest.toArray(), anagramSolution.toArray());
+
+    }
+
 
     @Test
     @DisplayName("Test phrase IT is smaller than 3 chars should return an array with 0 elements")
@@ -139,18 +149,5 @@ public class AnagramSolverServiceTest {
         assertEquals(0, anagramSolution.size());
     }
 
-    @Test
-    @DisplayName("Test phrase 'Best Sec ret' has more than 2 words should return an array with 16 elements")
-    public void testPhraseWithMoreThan2Words() {
-        //GIVEN
-        String phraseBestSecret = "Best Sec ret";
-
-        //WHEN
-        List<String> anagramSolution = anagramSolverService.solve(phraseBestSecret);
-
-        //THEN
-        assertEquals(16, anagramSolution.size());
-        assertArrayEquals(anagramBestSecret.toArray(), anagramSolution.toArray());
-    }
 
 }

@@ -2,6 +2,7 @@ package com.sf9000.anagram.service;
 
 import com.sf9000.anagram.model.BinaryEquivalency;
 import com.sf9000.anagram.repository.DictionaryRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -13,7 +14,8 @@ import java.util.stream.Collectors;
 @Component
 public class AnagramSolverService {
 
-    private DictionaryRepository dictionaryRepository = DictionaryRepository.getInstance();
+    @Autowired
+    DictionaryRepository dictionaryRepository;
 
     public List<String> solve(final String phraseToSolve) {
 
