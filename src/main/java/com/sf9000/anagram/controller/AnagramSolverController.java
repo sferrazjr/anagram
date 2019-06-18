@@ -3,12 +3,12 @@ package com.sf9000.anagram.controller;
 import com.sf9000.anagram.exception.InvalidWordException;
 import com.sf9000.anagram.service.AnagramSolverService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Calendar;
@@ -37,20 +37,29 @@ public class AnagramSolverController {
 
             List<String> anagramSolved = anagramSolverService.solve(word);
 
-            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(anagramSolved);
+            return ResponseEntity
+                    .ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(anagramSolved);
 
         } catch (InvalidWordException iwe) {
 
-            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(iwe.getMessage());
+            return ResponseEntity
+                    .badRequest()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(iwe.getMessage());
 
         } catch (Exception e) {
 
-            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(e.getMessage());
 
         } finally {
             System.out.println(new GregorianCalendar().getTimeInMillis() - startTimeStamp);
         }
-        return null;
+
     }
 
 }

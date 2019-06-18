@@ -2,6 +2,7 @@ package com.sf9000.anagram.repository;
 
 
 import com.sf9000.anagram.model.BinaryEquivalency;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +15,9 @@ import java.util.Scanner;
 
 @Repository
 public class DictionaryRepository {
+
+    @Value("${anagram.dictionary.file}")
+    private String fileName;
 
     private Map<String, Integer> dictionary = new HashMap<>();
 
@@ -33,7 +37,7 @@ public class DictionaryRepository {
     private void init() {
 
         ClassLoader classLoader = getClass().getClassLoader();
-        try (Scanner scanner = new Scanner(new File(classLoader.getResource("anagramDic.txt").getFile()))) {
+        try (Scanner scanner = new Scanner(new File(classLoader.getResource(fileName).getFile()))) {
             while (scanner.hasNext()) {
                 String dictionaryWord = scanner.nextLine();
                 if (dictionaryWord.length() > 2) {
