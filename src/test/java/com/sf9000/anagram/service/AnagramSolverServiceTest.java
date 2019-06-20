@@ -1,5 +1,6 @@
 package com.sf9000.anagram.service;
 
+import com.sf9000.anagram.model.DictionaryWord;
 import com.sf9000.anagram.repository.DictionaryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,13 +10,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class AnagramSolverServiceTest {
 
@@ -25,34 +25,35 @@ public class AnagramSolverServiceTest {
     @Mock
     DictionaryRepository dictionaryRepository;
 
-    List<String> anagramBest;
+    Map<String, DictionaryWord> dictionaryWordMap;
 
     @BeforeEach
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        anagramBest = new ArrayList<>();
-        anagramBest.add("best");
-        anagramBest.add("bets");
-
-        Map<String, Integer> dictionary = new HashMap<>();
-        dictionary.put("best",786450);
-        dictionary.put("bets",786450);
-
-        Mockito.when(dictionaryRepository.getDictionary())
-                .thenReturn(dictionary);
-
-        Map<String, Map<Character, Integer>> dictionaryCountLetter = new HashMap<>();
         Map<Character, Integer> bestCountLetters = new HashMap<>();
         bestCountLetters.put('b',1);
         bestCountLetters.put('e',1);
         bestCountLetters.put('s',1);
         bestCountLetters.put('t',1);
-        dictionaryCountLetter.put("best", bestCountLetters);
-        dictionaryCountLetter.put("bets", bestCountLetters);
 
-        Mockito.when(dictionaryRepository.getDictionaryCountLetter())
-                .thenReturn(dictionaryCountLetter);
+        dictionaryWordMap = new HashMap<>();
+
+        DictionaryWord dictionaryWordBest = new DictionaryWord()
+                .setWord("best")
+                .setBinary(786450)
+                .setCountLetter(bestCountLetters);
+
+        DictionaryWord dictionaryWordBets = new DictionaryWord()
+                .setWord("bets")
+                .setBinary(786450)
+                .setCountLetter(bestCountLetters);
+
+        dictionaryWordMap.put("best", dictionaryWordBest);
+        dictionaryWordMap.put("bets", dictionaryWordBets);
+
+        Mockito.when(dictionaryRepository.getDictionaryWordMap()).thenReturn(dictionaryWordMap);
+
     }
 
     @Test
@@ -67,7 +68,8 @@ public class AnagramSolverServiceTest {
 
         //THEN
         assertEquals(2, anagramSolution.size());
-        assertArrayEquals(anagramBest.toArray(), anagramSolution.toArray());
+        assertNotNull(dictionaryWordMap.get(anagramSolution.get(0)));
+        assertNotNull(dictionaryWordMap.get(anagramSolution.get(1)));
 
     }
 
@@ -83,7 +85,8 @@ public class AnagramSolverServiceTest {
 
         //THEN
         assertEquals(2, anagramSolution.size());
-        assertArrayEquals(anagramBest.toArray(), anagramSolution.toArray());
+        assertNotNull(dictionaryWordMap.get(anagramSolution.get(0)));
+        assertNotNull(dictionaryWordMap.get(anagramSolution.get(1)));
 
     }
 
@@ -99,7 +102,8 @@ public class AnagramSolverServiceTest {
 
         //THEN
         assertEquals(2, anagramSolution.size());
-        assertArrayEquals(anagramBest.toArray(), anagramSolution.toArray());
+        assertNotNull(dictionaryWordMap.get(anagramSolution.get(0)));
+        assertNotNull(dictionaryWordMap.get(anagramSolution.get(1)));
 
     }
 
@@ -115,7 +119,8 @@ public class AnagramSolverServiceTest {
 
         //THEN
         assertEquals(2, anagramSolution.size());
-        assertArrayEquals(anagramBest.toArray(), anagramSolution.toArray());
+        assertNotNull(dictionaryWordMap.get(anagramSolution.get(0)));
+        assertNotNull(dictionaryWordMap.get(anagramSolution.get(1)));
 
     }
 
@@ -131,7 +136,8 @@ public class AnagramSolverServiceTest {
 
         //THEN
         assertEquals(2, anagramSolution.size());
-        assertArrayEquals(anagramBest.toArray(), anagramSolution.toArray());
+        assertNotNull(dictionaryWordMap.get(anagramSolution.get(0)));
+        assertNotNull(dictionaryWordMap.get(anagramSolution.get(1)));
 
     }
 

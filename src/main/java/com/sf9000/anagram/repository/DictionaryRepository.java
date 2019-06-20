@@ -2,6 +2,7 @@ package com.sf9000.anagram.repository;
 
 
 import com.sf9000.anagram.model.BinaryEquivalency;
+import com.sf9000.anagram.model.DictionaryWord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -18,16 +19,10 @@ public class DictionaryRepository {
     @Value("${anagram.dictionary.file}")
     private String fileName;
 
-    private Map<String, Integer> dictionary = new HashMap<>();
+    private Map<String, DictionaryWord> dictionaryWordMap = new HashMap<>();
 
-    private Map<String, Map<Character, Integer>> dictionaryCountLetter = new HashMap<>();
-
-    public Map<String, Integer> getDictionary() {
-        return dictionary;
-    }
-
-    public Map<String, Map<Character, Integer>> getDictionaryCountLetter() {
-        return dictionaryCountLetter;
+    public Map<String, DictionaryWord> getDictionaryWordMap() {
+        return dictionaryWordMap;
     }
 
     @PostConstruct
@@ -36,21 +31,22 @@ public class DictionaryRepository {
         ClassLoader classLoader = getClass().getClassLoader();
         try (Scanner scanner = new Scanner(new File(classLoader.getResource(fileName).getFile()))) {
             while (scanner.hasNext()) {
-                String dictionaryWord = scanner.nextLine();
-                if (dictionaryWord.length() > 2) {
+                String word = scanner.nextLine();
+                if (word.length() > 2) {
 
                     int wordInBinary = 0;
 
-                    dictionaryCountLetter.put(dictionaryWord, new HashMap<>());
+                    DictionaryWord dictionaryWord = new DictionaryWord().setWord(word);
 
-                    for (char letter : dictionaryWord.toCharArray()) {
+                    for (char letter : word.toCharArray()) {
                         Integer binaryEquivalent = BinaryEquivalency.BINARY_EQUIVALENCY.get(letter);
 
                         if (binaryEquivalent != null) {
                             wordInBinary = wordInBinary | binaryEquivalent;
-                            dictionary.put(dictionaryWord, wordInBinary);
 
-                            Map<Character, Integer> letterCountMap = dictionaryCountLetter.get(dictionaryWord);
+                            dictionaryWord.setBinary(wordInBinary);
+
+                            Map<Character, Integer> letterCountMap = dictionaryWord.getCountLetter();
 
                             Integer letterCount = letterCountMap.get(letter);
                             if (letterCount == null) {
@@ -60,6 +56,7 @@ public class DictionaryRepository {
                             }
                         }
                     }
+                    dictionaryWordMap.put(word, dictionaryWord);
                 }
             }
         } catch (FileNotFoundException fileNotFoundException) {

@@ -1,6 +1,7 @@
 package com.sf9000.anagram.service;
 
 import com.sf9000.anagram.model.BinaryEquivalency;
+import com.sf9000.anagram.model.DictionaryWord;
 import com.sf9000.anagram.repository.DictionaryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,9 +22,7 @@ public class AnagramSolverService {
 
         final String phrase = sanitizePhrase(phraseToSolve);
 
-        Map<String, Integer> dictionary = dictionaryRepository.getDictionary();
-
-        Map<String, Map<Character, Integer>> dictionaryCountLetter = dictionaryRepository.getDictionaryCountLetter();
+        Map<String, DictionaryWord> dictionaryWordMap = dictionaryRepository.getDictionaryWordMap();
 
         int phraseInBinary = 0;
 
@@ -36,13 +35,15 @@ public class AnagramSolverService {
 
         Map<Character, Integer> phraseCountLetterMap = countLetterOfPhrase(phrase.toCharArray());
 
-        for (Map.Entry<String, Integer> dictionaryWord : dictionary.entrySet()) {
+        for (Map.Entry<String, DictionaryWord> stringDictionaryWordEntry : dictionaryWordMap.entrySet()) {
 
-            int phraseAndWordInBinary = phraseInBinary | dictionaryWord.getValue();
+            DictionaryWord dictionaryWord = stringDictionaryWordEntry.getValue();
+
+            int phraseAndWordInBinary = phraseInBinary | dictionaryWord.getBinary();
 
             if ((phraseAndWordInBinary ^ phraseInBinary) == 0) {
 
-                Map<Character, Integer> dictionaryWordCountLetterMap = dictionaryCountLetter.get(dictionaryWord.getKey());
+                Map<Character, Integer> dictionaryWordCountLetterMap = dictionaryWord.getCountLetter();
 
                 boolean isValidWord = true;
 
@@ -59,7 +60,7 @@ public class AnagramSolverService {
                 }
 
                 if (isValidWord) {
-                    anagramWordList.add(dictionaryWord.getKey());
+                    anagramWordList.add(dictionaryWord.getWord());
                 }
             }
         }
@@ -68,7 +69,7 @@ public class AnagramSolverService {
 
         List<String> anagramList = new ArrayList<>();
 
-        findAnagram(anagramWordListOrdered, anagramList, 0, "", dictionaryCountLetter, phrase);
+        findAnagram(anagramWordListOrdered, anagramList, 0, "", dictionaryWordMap, phrase);
 
         return anagramList;
 
@@ -98,7 +99,7 @@ public class AnagramSolverService {
             List<String> anagramList,
             Integer starterLoop,
             String myReturnPhrase,
-            Map<String, Map<Character, Integer>> dictionaryCountLetter,
+            Map<String, DictionaryWord> dictionaryWordMap,
             String phrase) {
 
         for (int i = starterLoop; i < anagramWordListOrdered.size(); i++) {
@@ -109,7 +110,7 @@ public class AnagramSolverService {
 
             String possibleReturnPhrase = myReturnPhrase;
 
-            Map<Character, Integer> anagramWordCountLetterMap = dictionaryCountLetter.get(anagramWord);
+            Map<Character, Integer> anagramWordCountLetterMap = dictionaryWordMap.get(anagramWord).getCountLetter();
 
             Map<Character, Integer> phraseCountLetterMap = countLetterOfPhrase(phrase.toCharArray());
 
@@ -153,7 +154,7 @@ public class AnagramSolverService {
             int lengthOfMyPhraseWithOutSpaces = phrase.replaceAll(" ", "").length();
 
             if (lengthOfReturnPhraseWithOutSpaces < lengthOfMyPhraseWithOutSpaces - 2) {
-                findAnagram(anagramWordListOrdered, anagramList, i + 1, possibleReturnPhrase, dictionaryCountLetter, phrase);
+                findAnagram(anagramWordListOrdered, anagramList, i + 1, possibleReturnPhrase, dictionaryWordMap, phrase);
             }
 
             if (isValidPhrase && (lengthOfReturnPhraseWithOutSpaces == lengthOfMyPhraseWithOutSpaces)) {
