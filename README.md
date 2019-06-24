@@ -19,6 +19,18 @@ Java 8 and maven version 3.3.9 or newer
 mvn clean instal
 ```
 
+## SonarQube
+Start SonarQube with Postgres using docker compose
+Obs: this is a WIP, missing put parameters to docker volumes
+```
+docker-compose up -d
+```
+and run the SonarQube
+```
+mvn sonar:sonar
+```
+Check the analysis in the browser _http://localhost:9000_
+
 ## Running the application
 
 Start the service (make sure there is no service running on port 8080)

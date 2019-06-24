@@ -1,0 +1,39 @@
+version: '2'
+
+services:
+  sonarqube:
+    image: sonarqube
+    ports:
+      - "9000:9000"
+    networks:
+      - sonarnet
+    environment:
+      - SONARQUBE_JDBC_URL=jdbc:postgresql://db:5432/sonar
+    volumes:
+      - sonarqube_conf:/home/sergio/development/docker_volumes/opt/sonarqube/conf
+      - sonarqube_data:/home/sergio/development/docker_volumes/opt/sonarqube/data
+      - sonarqube_extensions:/home/sergio/development/docker_volumes/opt/sonarqube/extensions
+      - sonarqube_bundled-plugins:/home/sergio/development/docker_volumes/opt/sonarqube/lib/bundled-plugins
+
+  db:
+    image: postgres
+    networks:
+      - sonarnet
+    environment:
+      - POSTGRES_USER=sonar
+      - POSTGRES_PASSWORD=sonar
+    volumes:
+      - postgresql:/home/sergio/development/docker_volumes/var/lib/postgresql
+      - postgresql_data:/home/sergio/development/docker_volumes/var/lib/postgresql/data
+
+networks:
+  sonarnet:
+    driver: bridge
+
+volumes:
+  sonarqube_conf:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_bundled-plugins:
+  postgresql:
+  postgresql_data:
