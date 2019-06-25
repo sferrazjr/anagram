@@ -1,7 +1,7 @@
 package com.sf9000.anagram.repository;
 
 
-import com.sf9000.anagram.model.DictionaryWord;
+import com.sf9000.anagram.model.WordEquivalency;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -18,9 +18,9 @@ public class DictionaryRepository {
     @Value("${anagram.dictionary.file}")
     private String fileName;
 
-    private Map<String, DictionaryWord> dictionaryWordMap = new HashMap<>();
+    private Map<String, WordEquivalency> dictionaryWordMap = new HashMap<>();
 
-    public Map<String, DictionaryWord> getDictionaryWordMap() {
+    public Map<String, WordEquivalency> getDictionaryWordMap() {
         return dictionaryWordMap;
     }
 
@@ -33,7 +33,7 @@ public class DictionaryRepository {
                 String word = scanner.nextLine();
                 if (word.length() > 2) {
 
-                    dictionaryWordMap.put(word, new DictionaryWord().create(word));
+                    dictionaryWordMap.put(word, new WordEquivalency().create(word));
 
                 }
             }

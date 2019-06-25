@@ -1,6 +1,6 @@
 package com.sf9000.anagram.service;
 
-import com.sf9000.anagram.model.DictionaryWord;
+import com.sf9000.anagram.model.WordEquivalency;
 import com.sf9000.anagram.repository.DictionaryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +25,7 @@ public class AnagramSolverServiceTest {
     @Mock
     DictionaryRepository dictionaryRepository;
 
-    Map<String, DictionaryWord> dictionaryWordMap;
+    Map<String, WordEquivalency> dictionaryWordMap;
 
     @BeforeEach
     public void init() {
@@ -39,18 +39,18 @@ public class AnagramSolverServiceTest {
 
         dictionaryWordMap = new HashMap<>();
 
-        DictionaryWord dictionaryWordBest = new DictionaryWord()
+        WordEquivalency wordEquivalencyBest = new WordEquivalency()
                 .setWord("best")
                 .setBinary(786450)
                 .setCountLetter(bestCountLetters);
 
-        DictionaryWord dictionaryWordBets = new DictionaryWord()
+        WordEquivalency wordEquivalencyBets = new WordEquivalency()
                 .setWord("bets")
                 .setBinary(786450)
                 .setCountLetter(bestCountLetters);
 
-        dictionaryWordMap.put("best", dictionaryWordBest);
-        dictionaryWordMap.put("bets", dictionaryWordBets);
+        dictionaryWordMap.put("best", wordEquivalencyBest);
+        dictionaryWordMap.put("bets", wordEquivalencyBets);
 
         Mockito.when(dictionaryRepository.getDictionaryWordMap()).thenReturn(dictionaryWordMap);
 

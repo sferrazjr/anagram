@@ -3,13 +3,13 @@ package com.sf9000.anagram.model;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DictionaryWord {
+public class WordEquivalency {
 
     private String word;
     private int binary;
     private Map<Character, Integer> countLetter = new HashMap<>();
 
-    public DictionaryWord setWord(String word) {
+    public WordEquivalency setWord(String word) {
         this.word = word;
         return this;
     }
@@ -18,7 +18,7 @@ public class DictionaryWord {
         return word;
     }
 
-    public DictionaryWord setBinary(int binary) {
+    public WordEquivalency setBinary(int binary) {
         this.binary = binary;
         return this;
     }
@@ -27,7 +27,7 @@ public class DictionaryWord {
         return binary;
     }
 
-    public DictionaryWord setCountLetter(Map<Character, Integer> countLetter) {
+    public WordEquivalency setCountLetter(Map<Character, Integer> countLetter) {
         this.countLetter = countLetter;
         return this;
     }
@@ -36,9 +36,9 @@ public class DictionaryWord {
         return countLetter;
     }
 
-    public DictionaryWord create(String word) {
+    public WordEquivalency create(String word) {
 
-        DictionaryWord dictionaryWord = new DictionaryWord().setWord(word);
+        WordEquivalency wordEquivalency = new WordEquivalency().setWord(word);
 
         int wordInBinary = 0;
         for (char letter : word.toCharArray()) {
@@ -47,9 +47,9 @@ public class DictionaryWord {
             if (binaryEquivalent != null) {
                 wordInBinary = wordInBinary | binaryEquivalent;
 
-                dictionaryWord.setBinary(wordInBinary);
+                wordEquivalency.setBinary(wordInBinary);
 
-                Map<Character, Integer> letterCountMap = dictionaryWord.getCountLetter();
+                Map<Character, Integer> letterCountMap = wordEquivalency.getCountLetter();
 
                 Integer letterCount = letterCountMap.get(letter);
                 if (letterCount == null) {
@@ -60,7 +60,7 @@ public class DictionaryWord {
             }
         }
 
-        return dictionaryWord;
+        return wordEquivalency;
 
     }
 
