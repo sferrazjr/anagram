@@ -30,7 +30,7 @@ public class AnagramSolverService {
 
         List<String> anagramList = new ArrayList<>();
 
-        findAnagram(anagramWordListOrdered, anagramList, 0, "", dictionaryWordMap, phrase);
+        findAnagram(anagramWordListOrdered, anagramList, 0, "", dictionaryWordMap, phraseWordEquivalency);
 
         return anagramList;
 
@@ -112,31 +112,17 @@ public class AnagramSolverService {
             Integer starterLoop,
             String returnPhrase,
             Map<String, WordEquivalency> dictionaryWordMap,
-            String phrase) {
+            WordEquivalency phraseWordEquivalency) {
 
         for (int i = starterLoop; i < anagramWordListOrdered.size(); i++) {
 
             String anagramWord = anagramWordListOrdered.get(i);
 
-            boolean isValidWord = true;
+            boolean isValidWord = isNumberOfPhraseLetterSmallerThanDictionaryWordLetters(phraseWordEquivalency, dictionaryWordMap.get(anagramWord));
 
             String possibleReturnPhrase = returnPhrase;
 
-            Map<Character, Integer> anagramWordCountLetterMap = dictionaryWordMap.get(anagramWord).getCountLetter();
-
-            Map<Character, Integer> phraseCountLetterMap = countLetterOfPhrase(phrase.toCharArray());
-
-            for (Map.Entry<Character, Integer> entry : anagramWordCountLetterMap.entrySet()) {
-
-                Character anagramWordLetter = entry.getKey();
-
-                Integer anagramLetterCounter = phraseCountLetterMap.get(anagramWordLetter);
-
-                if (entry.getValue() > anagramLetterCounter) {
-                    isValidWord = false;
-                }
-
-            }
+            Map<Character, Integer> phraseCountLetterMap = countLetterOfPhrase(phraseWordEquivalency.getWord().toCharArray());
 
             if (isValidWord) {
 
@@ -162,10 +148,10 @@ public class AnagramSolverService {
             }
 
             int lengthOfReturnPhraseWithOutSpaces = possibleReturnPhrase.replaceAll(" ", "").length();
-            int lengthOfMyPhraseWithOutSpaces = phrase.replaceAll(" ", "").length();
+            int lengthOfMyPhraseWithOutSpaces = phraseWordEquivalency.getWord().replaceAll(" ", "").length();
 
             if (lengthOfReturnPhraseWithOutSpaces < lengthOfMyPhraseWithOutSpaces - 2) {
-                findAnagram(anagramWordListOrdered, anagramList, i + 1, possibleReturnPhrase, dictionaryWordMap, phrase);
+                findAnagram(anagramWordListOrdered, anagramList, i + 1, possibleReturnPhrase, dictionaryWordMap, phraseWordEquivalency);
             }
 
             if (isValidPhrase && (lengthOfReturnPhraseWithOutSpaces == lengthOfMyPhraseWithOutSpaces)) {
