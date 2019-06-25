@@ -2,6 +2,7 @@ package com.sf9000.anagram.controller;
 
 import com.sf9000.anagram.exception.InvalidInputException;
 import com.sf9000.anagram.service.AnagramSolverService;
+import com.sf9000.anagram.util.ContentUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +25,7 @@ public class AnagramSolverController {
     @GetMapping("/solve/{word}")
     ResponseEntity<List<String>> solve(@PathVariable String word) throws InvalidInputException {
 
-        if (word == null || word.isEmpty() || word.length() < 3) {
-            throw new InvalidInputException("Word should contain at least 3 characters");
-        }
+        ContentUtil.wordInputValidation(word);
 
         Calendar calendar = new GregorianCalendar();
         long startTimeStamp = calendar.getTimeInMillis();

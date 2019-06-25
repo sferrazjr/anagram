@@ -67,8 +67,8 @@ public class AnagramApiTest {
     }
 
     @Test
-    @DisplayName("Test phrase 'Best Secret' should return HTTP Status 200 and list of 'Best Secret' anagram")
-    public void testPhraseBestSecret() throws Exception {
+    @DisplayName("Solve anagram of 'Best Secret' should return HTTP Status 200 and list of 'Best Secret' anagram")
+    public void solveAnagramBestSecret() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/anagram/solve/Best Secret")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -80,8 +80,8 @@ public class AnagramApiTest {
 
 
     @Test
-    @DisplayName("Test phrase 'IT-Crowd' has special and upper case character should return HTTP Status 200 and array with 5 elements")
-    public void testPhraseITCrowd() throws Exception {
+    @DisplayName("Solve anagram of 'IT-Crowd' has special and upper case character should return HTTP Status 200 and array with 5 elements")
+    public void solveAnagramITCrowd() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/anagram/solve/IT-Crowd")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -91,8 +91,8 @@ public class AnagramApiTest {
     }
 
     @Test
-    @DisplayName("Test phrase 'Aschheim' should return HTTP Status 200 and array with 7 elements")
-    public void testPhraseAschheim() throws Exception {
+    @DisplayName("Solve anagram of 'Aschheim' should return HTTP Status 200 and array with 7 elements")
+    public void solveAnagramAschheim() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/anagram/solve/Aschheim")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -103,8 +103,8 @@ public class AnagramApiTest {
     }
 
     @Test
-    @DisplayName("Test phrase IT is smaller than 3 chars should return HTTP 400")
-    public void testPhraseWithOnlyOneWordSmallerThan3Chars() throws Exception {
+    @DisplayName("Solve anagram of IT is smaller than 3 chars should return HTTP 400")
+    public void solveAnagramWithOnlyOneWordSmallerThan3Chars() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/anagram/solve/IT")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -112,5 +112,26 @@ public class AnagramApiTest {
                 .andExpect(jsonPath("message").value("Word should contain at least 3 characters"));
     }
 
+    @Test
+    @DisplayName("Count letters of a word Maria should return HTTP Status 200 and integer 4")
+    public void countLetterOfMaria() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/counter/letters/Maria")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").value(4));
+
+    }
+
+    @Test
+    @DisplayName("Count letters of word IT is smaller than 3 chars should return HTTP 400")
+    public void countLettersOfWordSmallerThan3Chars() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/counter/letters/IT")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("message").value("Word should contain at least 3 characters"));
+    }
 
 }

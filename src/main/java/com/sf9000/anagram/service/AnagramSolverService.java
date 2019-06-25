@@ -1,5 +1,6 @@
 package com.sf9000.anagram.service;
 
+import com.sf9000.anagram.util.SanitizeUtil;
 import com.sf9000.anagram.model.BinaryEquivalency;
 import com.sf9000.anagram.model.DictionaryWord;
 import com.sf9000.anagram.repository.DictionaryRepository;
@@ -20,7 +21,7 @@ public class AnagramSolverService {
 
     public List<String> solve(final String phraseToSolve) {
 
-        final String phrase = sanitizePhrase(phraseToSolve);
+        final String phrase = SanitizeUtil.sanitizePhrase(phraseToSolve);
 
         Map<String, DictionaryWord> dictionaryWordMap = dictionaryRepository.getDictionaryWordMap();
 
@@ -73,10 +74,6 @@ public class AnagramSolverService {
 
         return anagramList;
 
-    }
-
-    private String sanitizePhrase(String phraseToSolve) {
-        return phraseToSolve.toLowerCase().replaceAll("[^a-z]", "");
     }
 
     private Map<Character, Integer> countLetterOfPhrase(char[] phraseCharArray) {
