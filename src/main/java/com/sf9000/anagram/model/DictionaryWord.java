@@ -35,4 +35,33 @@ public class DictionaryWord {
     public Map<Character, Integer> getCountLetter() {
         return countLetter;
     }
+
+    public DictionaryWord create(String word) {
+
+        DictionaryWord dictionaryWord = new DictionaryWord().setWord(word);
+
+        int wordInBinary = 0;
+        for (char letter : word.toCharArray()) {
+            Integer binaryEquivalent = BinaryEquivalency.BINARY_EQUIVALENCY.get(letter);
+
+            if (binaryEquivalent != null) {
+                wordInBinary = wordInBinary | binaryEquivalent;
+
+                dictionaryWord.setBinary(wordInBinary);
+
+                Map<Character, Integer> letterCountMap = dictionaryWord.getCountLetter();
+
+                Integer letterCount = letterCountMap.get(letter);
+                if (letterCount == null) {
+                    letterCountMap.put(letter, 1);
+                } else {
+                    letterCountMap.put(letter, ++letterCount);
+                }
+            }
+        }
+
+        return dictionaryWord;
+
+    }
+
 }

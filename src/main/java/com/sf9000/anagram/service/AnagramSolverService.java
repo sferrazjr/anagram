@@ -25,16 +25,11 @@ public class AnagramSolverService {
 
         Map<String, DictionaryWord> dictionaryWordMap = dictionaryRepository.getDictionaryWordMap();
 
-        int phraseInBinary = 0;
-
-        for (char letter : phrase.toCharArray()) {
-            Integer binaryEquivalent = BinaryEquivalency.BINARY_EQUIVALENCY.get(letter);
-            phraseInBinary = phraseInBinary | binaryEquivalent;
-        }
-
-        List<String> anagramWordList = new ArrayList<>();
+        int phraseInBinary = getPhraseInBinary(phrase);
 
         Map<Character, Integer> phraseCountLetterMap = countLetterOfPhrase(phrase.toCharArray());
+
+        List<String> anagramWordList = new ArrayList<>();
 
         for (Map.Entry<String, DictionaryWord> stringDictionaryWordEntry : dictionaryWordMap.entrySet()) {
 
@@ -44,23 +39,9 @@ public class AnagramSolverService {
 
             if ((phraseAndWordInBinary ^ phraseInBinary) == 0) {
 
-                Map<Character, Integer> dictionaryWordCountLetterMap = dictionaryWord.getCountLetter();
+                boolean isNumberOfLettersValid = isNumberOfPhraseLetterSmallerThanDictionaryWordLetters(phraseCountLetterMap, dictionaryWord);
 
-                boolean isValidWord = true;
-
-                for (Map.Entry<Character, Integer> entry : dictionaryWordCountLetterMap.entrySet()) {
-
-                    Character dictionaryLetter = entry.getKey();
-
-                    Integer letterCounter = phraseCountLetterMap.get(dictionaryLetter);
-
-                    if (letterCounter != null && entry.getValue() > letterCounter) {
-                        isValidWord = false;
-                    }
-
-                }
-
-                if (isValidWord) {
+                if (isNumberOfLettersValid) {
                     anagramWordList.add(dictionaryWord.getWord());
                 }
             }
@@ -76,6 +57,42 @@ public class AnagramSolverService {
 
     }
 
+    private int getPhraseInBinary(String phrase) {
+        int phraseInBinary = 0;
+
+        for (char letter : phrase.toCharArray()) {
+            Integer binaryEquivalent = BinaryEquivalency.BINARY_EQUIVALENCY.get(letter);
+            phraseInBinary = phraseInBinary | binaryEquivalent;
+        }
+        return phraseInBinary;
+    }
+
+    private boolean isNumberOfPhraseLetterSmallerThanDictionaryWordLetters(
+            Map<Character, Integer> phraseCountLetterMap,
+            DictionaryWord dictionaryWord) {
+
+        Map<Character, Integer> dictionaryWordCountLetterMap = dictionaryWord.getCountLetter();
+
+        for (Map.Entry<Character, Integer> characterIntegerEntry : dictionaryWordCountLetterMap.entrySet()) {
+
+            Character dictionaryLetter = characterIntegerEntry.getKey();
+
+            Integer letterCounter = phraseCountLetterMap.get(dictionaryLetter);
+
+            if (letterCounter != null && characterIntegerEntry.getValue() > letterCounter) {
+                return false;
+            }
+
+        }
+        return true;
+    }
+
+    /**
+     * Count number of letter and how many times it repeats in the word.<BR>
+     * Example: word maria returns and Map as {a=2, r=1, i=1, m=1}
+     * @param phraseCharArray
+     * @return java.util.Map<Character, Integer>
+     */
     private Map<Character, Integer> countLetterOfPhrase(char[] phraseCharArray) {
         Map<Character, Integer> phraseCountMap = new HashMap<>();
 
@@ -141,8 +158,7 @@ public class AnagramSolverService {
             boolean isValidPhrase = true;
 
             for (Map.Entry<Character, Integer> phraseCountEntry : phraseCountLetterMap.entrySet()) {
-                Integer myInteger = phraseCountEntry.getValue();
-                if (myInteger > 0) {
+                if (phraseCountEntry.getValue()!=null && phraseCountEntry.getValue() > 0) {
                     isValidPhrase = false;
                 }
             }

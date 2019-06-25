@@ -1,7 +1,6 @@
 package com.sf9000.anagram.repository;
 
 
-import com.sf9000.anagram.model.BinaryEquivalency;
 import com.sf9000.anagram.model.DictionaryWord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -34,29 +33,8 @@ public class DictionaryRepository {
                 String word = scanner.nextLine();
                 if (word.length() > 2) {
 
-                    int wordInBinary = 0;
+                    dictionaryWordMap.put(word, new DictionaryWord().create(word));
 
-                    DictionaryWord dictionaryWord = new DictionaryWord().setWord(word);
-
-                    for (char letter : word.toCharArray()) {
-                        Integer binaryEquivalent = BinaryEquivalency.BINARY_EQUIVALENCY.get(letter);
-
-                        if (binaryEquivalent != null) {
-                            wordInBinary = wordInBinary | binaryEquivalent;
-
-                            dictionaryWord.setBinary(wordInBinary);
-
-                            Map<Character, Integer> letterCountMap = dictionaryWord.getCountLetter();
-
-                            Integer letterCount = letterCountMap.get(letter);
-                            if (letterCount == null) {
-                                letterCountMap.put(letter, 1);
-                            } else {
-                                letterCountMap.put(letter, ++letterCount);
-                            }
-                        }
-                    }
-                    dictionaryWordMap.put(word, dictionaryWord);
                 }
             }
         } catch (FileNotFoundException fileNotFoundException) {
