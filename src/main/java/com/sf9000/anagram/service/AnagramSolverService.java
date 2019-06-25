@@ -1,9 +1,8 @@
 package com.sf9000.anagram.service;
 
-import com.sf9000.anagram.util.SanitizeUtil;
-import com.sf9000.anagram.model.BinaryEquivalency;
 import com.sf9000.anagram.model.WordEquivalency;
 import com.sf9000.anagram.repository.DictionaryRepository;
+import com.sf9000.anagram.util.SanitizeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,31 +22,11 @@ public class AnagramSolverService {
 
         final String phrase = SanitizeUtil.sanitizePhrase(phraseToSolve);
 
-        Map<String, WordEquivalency> dictionaryWordMap = dictionaryRepository.getDictionaryWordMap();
+        final WordEquivalency phraseWordEquivalency = new WordEquivalency().create(phrase);
 
-        int phraseInBinary = getPhraseInBinary(phrase);
+        final Map<String, WordEquivalency> dictionaryWordMap = dictionaryRepository.getDictionaryWordMap();
 
-        Map<Character, Integer> phraseCountLetterMap = countLetterOfPhrase(phrase.toCharArray());
-
-        List<String> anagramWordList = new ArrayList<>();
-
-        for (Map.Entry<String, WordEquivalency> stringDictionaryWordEntry : dictionaryWordMap.entrySet()) {
-
-            WordEquivalency wordEquivalency = stringDictionaryWordEntry.getValue();
-
-            int phraseAndWordInBinary = phraseInBinary | wordEquivalency.getBinary();
-
-            if ((phraseAndWordInBinary ^ phraseInBinary) == 0) {
-
-                boolean isNumberOfLettersValid = isNumberOfPhraseLetterSmallerThanDictionaryWordLetters(phraseCountLetterMap, wordEquivalency);
-
-                if (isNumberOfLettersValid) {
-                    anagramWordList.add(wordEquivalency.getWord());
-                }
-            }
-        }
-
-        List<String> anagramWordListOrdered = anagramWordList.stream().sorted().collect(Collectors.toList());
+        List<String> anagramWordListOrdered = createAnagramListOfWords(dictionaryWordMap, phraseWordEquivalency);
 
         List<String> anagramList = new ArrayList<>();
 
@@ -57,18 +36,37 @@ public class AnagramSolverService {
 
     }
 
-    private int getPhraseInBinary(String phrase) {
-        int phraseInBinary = 0;
 
-        for (char letter : phrase.toCharArray()) {
-            Integer binaryEquivalent = BinaryEquivalency.BINARY_EQUIVALENCY.get(letter);
-            phraseInBinary = phraseInBinary | binaryEquivalent;
+    /**
+     * Creates an alphabetical ordered list of all strings that are anagrams of phrase and are in the dictionary
+     * @param dictionaryWordMap
+     * @param phraseWordEquivalency
+     * @return
+     */
+    private List<String> createAnagramListOfWords(Map<String, WordEquivalency> dictionaryWordMap, WordEquivalency phraseWordEquivalency) {
+        List<String> anagramWordList = new ArrayList<>();
+
+        for (Map.Entry<String, WordEquivalency> stringDictionaryWordEntry : dictionaryWordMap.entrySet()) {
+
+            WordEquivalency wordEquivalency = stringDictionaryWordEntry.getValue();
+
+            int phraseAndWordInBinary = phraseWordEquivalency.getBinary() | wordEquivalency.getBinary();
+
+            if ((phraseAndWordInBinary ^ phraseWordEquivalency.getBinary()) == 0) {
+
+                boolean isNumberOfLettersValid = isNumberOfPhraseLetterSmallerThanDictionaryWordLetters(phraseWordEquivalency, wordEquivalency);
+
+                if (isNumberOfLettersValid) {
+                    anagramWordList.add(wordEquivalency.getWord());
+                }
+            }
         }
-        return phraseInBinary;
+
+        return anagramWordList.stream().sorted().collect(Collectors.toList());
     }
 
     private boolean isNumberOfPhraseLetterSmallerThanDictionaryWordLetters(
-            Map<Character, Integer> phraseCountLetterMap,
+            WordEquivalency phraseEquivalency,
             WordEquivalency wordEquivalency) {
 
         Map<Character, Integer> dictionaryWordCountLetterMap = wordEquivalency.getCountLetter();
@@ -77,7 +75,7 @@ public class AnagramSolverService {
 
             Character dictionaryLetter = characterIntegerEntry.getKey();
 
-            Integer letterCounter = phraseCountLetterMap.get(dictionaryLetter);
+            Integer letterCounter = phraseEquivalency.getCountLetter().get(dictionaryLetter);
 
             if (letterCounter != null && characterIntegerEntry.getValue() > letterCounter) {
                 return false;
@@ -112,7 +110,7 @@ public class AnagramSolverService {
             List<String> anagramWordListOrdered,
             List<String> anagramList,
             Integer starterLoop,
-            String myReturnPhrase,
+            String returnPhrase,
             Map<String, WordEquivalency> dictionaryWordMap,
             String phrase) {
 
@@ -122,7 +120,7 @@ public class AnagramSolverService {
 
             boolean isValidWord = true;
 
-            String possibleReturnPhrase = myReturnPhrase;
+            String possibleReturnPhrase = returnPhrase;
 
             Map<Character, Integer> anagramWordCountLetterMap = dictionaryWordMap.get(anagramWord).getCountLetter();
 
