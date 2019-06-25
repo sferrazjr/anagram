@@ -69,7 +69,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<mainClass>com.sf9000.anagram.AnagramApplication</mainClass>
+					<mainClass>com.sf9000.anagram.AnagramApi</mainClass>
 				</configuration>
 			</plugin>
 			<plugin>
