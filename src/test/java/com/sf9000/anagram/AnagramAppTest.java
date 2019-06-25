@@ -109,7 +109,7 @@ public class AnagramAppTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/anagram/solve/IT")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value("Word should contain at least 3 characters"));
+                .andExpect(jsonPath("message").value("Word should contain at least 3 characters"));
     }
 
 
