@@ -15,16 +15,18 @@ import java.util.stream.Collectors;
 @Component
 public class AnagramSolverService {
 
+    private static final int MINIMUM_SIZE_OF_INVALID_WORD = 2;
+
     @Autowired
     DictionaryRepository dictionaryRepository;
 
     public List<String> solve(final String phraseToSolve) {
 
-        final String phrase = SanitizeUtil.sanitizePhrase(phraseToSolve);
+        String phrase = SanitizeUtil.sanitizePhrase(phraseToSolve);
 
-        final WordEquivalency phraseWordEquivalency = new WordEquivalency().create(phrase);
+        WordEquivalency phraseWordEquivalency = new WordEquivalency().create(phrase);
 
-        final Map<String, WordEquivalency> dictionaryWordMap = dictionaryRepository.getDictionaryWordMap();
+        Map<String, WordEquivalency> dictionaryWordMap = dictionaryRepository.getDictionaryWordMap();
 
         List<String> anagramWordListOrdered = createAnagramListOfWords(dictionaryWordMap, phraseWordEquivalency);
 
@@ -151,7 +153,7 @@ public class AnagramSolverService {
             int lengthOfPossibleReturnPhraseWithOutSpaces = possibleReturnPhrase.replaceAll(" ", "").length();
             int lengthOfPhraseWithOutSpaces = phraseWordEquivalency.getWord().replaceAll(" ", "").length();
 
-            if (lengthOfPossibleReturnPhraseWithOutSpaces < lengthOfPhraseWithOutSpaces - 2) {
+            if (lengthOfPossibleReturnPhraseWithOutSpaces < lengthOfPhraseWithOutSpaces - MINIMUM_SIZE_OF_INVALID_WORD) {
                 findAnagram(anagramWordListOrdered, anagramList, i + 1, possibleReturnPhrase, dictionaryWordMap, phraseWordEquivalency);
             }
 

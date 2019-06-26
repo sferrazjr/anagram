@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class AnagramApi {
 
 	public static void main(String[] args) {
-		SpringApplication.run(AnagramApi.class, args);
+		SpringApplication.run(AnagramApi.class);
 	}
 
 }
