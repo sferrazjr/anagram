@@ -1,7 +1,8 @@
 package com.sf9000.anagram.service;
 
-import com.sf9000.anagram.model.BinaryEquivalency;
+import com.sf9000.anagram.model.WordEquivalency;
 import com.sf9000.anagram.repository.DictionaryRepository;
+import com.sf9000.anagram.util.SanitizeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,70 +15,84 @@ import java.util.stream.Collectors;
 @Component
 public class AnagramSolverService {
 
+    private static final int MINIMUM_SIZE_OF_INVALID_WORD = 2;
+
     @Autowired
     DictionaryRepository dictionaryRepository;
 
     public List<String> solve(final String phraseToSolve) {
 
-        final String phrase = sanitizePhrase(phraseToSolve);
+        String phrase = SanitizeUtil.sanitizePhrase(phraseToSolve);
 
-        Map<String, Integer> dictionary = dictionaryRepository.getDictionary();
+        WordEquivalency phraseWordEquivalency = new WordEquivalency().create(phrase);
 
-        Map<String, Map<Character, Integer>> dictionaryCountLetter = dictionaryRepository.getDictionaryCountLetter();
+        Map<String, WordEquivalency> dictionaryWordMap = dictionaryRepository.getDictionaryWordMap();
 
-        int phraseInBinary = 0;
-
-        for (char letter : phrase.toCharArray()) {
-            Integer binaryEquivalent = BinaryEquivalency.BINARY_EQUIVALENCY.get(letter);
-            phraseInBinary = phraseInBinary | binaryEquivalent;
-        }
-
-        List<String> anagramWordList = new ArrayList<>();
-
-        Map<Character, Integer> phraseCountLetterMap = countLetterOfPhrase(phrase.toCharArray());
-
-        for (Map.Entry<String, Integer> dictionaryWord : dictionary.entrySet()) {
-
-            int phraseAndWordInBinary = phraseInBinary | dictionaryWord.getValue();
-
-            if ((phraseAndWordInBinary ^ phraseInBinary) == 0) {
-
-                Map<Character, Integer> dictionaryWordCountLetterMap = dictionaryCountLetter.get(dictionaryWord.getKey());
-
-                boolean isValidWord = true;
-
-                for (Map.Entry<Character, Integer> entry : dictionaryWordCountLetterMap.entrySet()) {
-
-                    Character dictionaryLetter = entry.getKey();
-
-                    Integer letterCounter = phraseCountLetterMap.get(dictionaryLetter);
-
-                    if (letterCounter != null && entry.getValue() > letterCounter) {
-                        isValidWord = false;
-                    }
-
-                }
-
-                if (isValidWord) {
-                    anagramWordList.add(dictionaryWord.getKey());
-                }
-            }
-        }
-
-        List<String> anagramWordListOrdered = anagramWordList.stream().sorted().collect(Collectors.toList());
+        List<String> anagramWordListOrdered = createAnagramListOfWords(dictionaryWordMap, phraseWordEquivalency);
 
         List<String> anagramList = new ArrayList<>();
 
-        findAnagram(anagramWordListOrdered, anagramList, 0, "", dictionaryCountLetter, phrase);
+        findAnagram(anagramWordListOrdered, anagramList, 0, "", dictionaryWordMap, phraseWordEquivalency);
 
         return anagramList;
 
     }
 
-    private String sanitizePhrase(String phraseToSolve) {
-        return phraseToSolve.toLowerCase().replaceAll("[^a-z]", "");
+
+    /**
+     * Creates an alphabetical ordered list of all strings can be anagrams of the phrase and are in the dictionary
+     * @param dictionaryWordMap
+     * @param phraseWordEquivalency
+     * @return
+     */
+    private List<String> createAnagramListOfWords(Map<String, WordEquivalency> dictionaryWordMap, WordEquivalency phraseWordEquivalency) {
+        List<String> anagramWordList = new ArrayList<>();
+
+        for (Map.Entry<String, WordEquivalency> stringDictionaryWordEntry : dictionaryWordMap.entrySet()) {
+
+            WordEquivalency wordEquivalency = stringDictionaryWordEntry.getValue();
+
+            int phraseAndWordInBinary = phraseWordEquivalency.getBinary() | wordEquivalency.getBinary();
+
+            if ((phraseAndWordInBinary ^ phraseWordEquivalency.getBinary()) == 0) {
+
+                boolean isNumberOfLettersValid = isNumberOfPhraseLetterSmallerThanDictionaryWordLetters(phraseWordEquivalency, wordEquivalency);
+
+                if (isNumberOfLettersValid) {
+                    anagramWordList.add(wordEquivalency.getWord());
+                }
+            }
+        }
+
+        return anagramWordList.stream().sorted().collect(Collectors.toList());
     }
 
+    private boolean isNumberOfPhraseLetterSmallerThanDictionaryWordLetters(
+            WordEquivalency phraseEquivalency,
+            WordEquivalency wordEquivalency) {
+
+        Map<Character, Integer> dictionaryWordCountLetterMap = wordEquivalency.getCountLetter();
+
+        for (Map.Entry<Character, Integer> characterIntegerEntry : dictionaryWordCountLetterMap.entrySet()) {
+
+            Character dictionaryLetter = characterIntegerEntry.getKey();
+
+            Integer letterCounter = phraseEquivalency.getCountLetter().get(dictionaryLetter);
+
+            if (letterCounter != null && characterIntegerEntry.getValue() > letterCounter) {
+                return false;
+            }
+
+        }
+        return true;
+    }
+
+    /**
+     * Count number of letter and how many times it repeats in the word.<BR>
+     * Example: word maria returns and Map as {a=2, r=1, i=1, m=1}
+     * @param phraseCharArray
+     * @return java.util.Map<Character, Integer>
+     */
     private Map<Character, Integer> countLetterOfPhrase(char[] phraseCharArray) {
         Map<Character, Integer> phraseCountMap = new HashMap<>();
 
@@ -93,72 +108,71 @@ public class AnagramSolverService {
         return phraseCountMap;
     }
 
+    /**
+     * Uses the anagramWordListOrdered to create a list of phrases that are anagram of phraseToSolve.<BR>
+     *     Recursively gets the returnPhrase to compare with next word of anagramWordListOrdered.
+     * @param anagramWordListOrdered
+     * @param anagramList
+     * @param starterLoop
+     * @param returnPhrase
+     * @param dictionaryWordMap
+     * @param phraseWordEquivalency
+     */
     private void findAnagram(
             List<String> anagramWordListOrdered,
             List<String> anagramList,
             Integer starterLoop,
-            String myReturnPhrase,
-            Map<String, Map<Character, Integer>> dictionaryCountLetter,
-            String phrase) {
+            String returnPhrase,
+            Map<String, WordEquivalency> dictionaryWordMap,
+            WordEquivalency phraseWordEquivalency) {
 
         for (int i = starterLoop; i < anagramWordListOrdered.size(); i++) {
 
             String anagramWord = anagramWordListOrdered.get(i);
 
-            boolean isValidWord = true;
+            boolean isNumberOfLettersValid = isNumberOfPhraseLetterSmallerThanDictionaryWordLetters(phraseWordEquivalency, dictionaryWordMap.get(anagramWord));
 
-            String possibleReturnPhrase = myReturnPhrase;
+            String possibleReturnPhrase = returnPhrase;
 
-            Map<Character, Integer> anagramWordCountLetterMap = dictionaryCountLetter.get(anagramWord);
+            Map<Character, Integer> phraseCountLetterMap = countLetterOfPhrase(phraseWordEquivalency.getWord().toCharArray());
 
-            Map<Character, Integer> phraseCountLetterMap = countLetterOfPhrase(phrase.toCharArray());
+            if (isNumberOfLettersValid) {
 
-            for (Map.Entry<Character, Integer> entry : anagramWordCountLetterMap.entrySet()) {
+                possibleReturnPhrase = addsCurrentAnagramToPossibleReturnPhrase(anagramWord, possibleReturnPhrase, phraseCountLetterMap);
 
-                Character anagramWordLetter = entry.getKey();
-
-                Integer anagramLetterCounter = phraseCountLetterMap.get(anagramWordLetter);
-
-                if (entry.getValue() > anagramLetterCounter) {
-                    isValidWord = false;
-                }
-
-            }
-
-            if (isValidWord) {
-
-                possibleReturnPhrase = possibleReturnPhrase + " " + anagramWord;
-
-                char[] possibleReturnPhraseCharArray = possibleReturnPhrase.replaceAll(" ", "").toCharArray();
-
-                for (char possibleReturnPhraseLetter : possibleReturnPhraseCharArray) {
-
-                    Integer myInteger = phraseCountLetterMap.get(possibleReturnPhraseLetter);
-                    if (myInteger != null) {
-                        phraseCountLetterMap.put(possibleReturnPhraseLetter, --myInteger);
-                    }
-                }
             }
 
             boolean isValidPhrase = true;
 
             for (Map.Entry<Character, Integer> phraseCountEntry : phraseCountLetterMap.entrySet()) {
-                Integer myInteger = phraseCountEntry.getValue();
-                if (myInteger > 0) {
+                if (phraseCountEntry.getValue()!=null && phraseCountEntry.getValue() > 0) {
                     isValidPhrase = false;
                 }
             }
 
-            int lengthOfReturnPhraseWithOutSpaces = possibleReturnPhrase.replaceAll(" ", "").length();
-            int lengthOfMyPhraseWithOutSpaces = phrase.replaceAll(" ", "").length();
+            int lengthOfPossibleReturnPhraseWithOutSpaces = possibleReturnPhrase.replaceAll(" ", "").length();
+            int lengthOfPhraseWithOutSpaces = phraseWordEquivalency.getWord().replaceAll(" ", "").length();
 
-            if (lengthOfReturnPhraseWithOutSpaces < lengthOfMyPhraseWithOutSpaces - 2) {
-                findAnagram(anagramWordListOrdered, anagramList, i + 1, possibleReturnPhrase, dictionaryCountLetter, phrase);
+            if (lengthOfPossibleReturnPhraseWithOutSpaces < lengthOfPhraseWithOutSpaces - MINIMUM_SIZE_OF_INVALID_WORD) {
+                findAnagram(anagramWordListOrdered, anagramList, i + 1, possibleReturnPhrase, dictionaryWordMap, phraseWordEquivalency);
             }
 
-            if (isValidPhrase && (lengthOfReturnPhraseWithOutSpaces == lengthOfMyPhraseWithOutSpaces)) {
+            if (isValidPhrase && (lengthOfPossibleReturnPhraseWithOutSpaces == lengthOfPhraseWithOutSpaces)) {
                 anagramList.add(possibleReturnPhrase.trim());
             }
         }
+    }
+
+    private String addsCurrentAnagramToPossibleReturnPhrase(String anagramWord, String possibleReturnPhrase, Map<Character, Integer> phraseCountLetterMap) {
+        possibleReturnPhrase = possibleReturnPhrase + " " + anagramWord;
+
+        char[] possibleReturnPhraseCharArray = possibleReturnPhrase.replaceAll(" ", "").toCharArray();
+
+        for (char possibleReturnPhraseLetter : possibleReturnPhraseCharArray) {
+
+            phraseCountLetterMap.computeIfPresent(possibleReturnPhraseLetter, (character, letterCount) -> --letterCount);
+
+        }
+        return possibleReturnPhrase;
     }
 }

@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>com.sf9000</groupId>
 	<artifactId>anagram</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<name>anagram</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Anagram Solver</description>
 
 	<properties>
 		<java.version>1.8</java.version>
@@ -69,7 +69,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<mainClass>com.sf9000.anagram.AnagramApplication</mainClass>
+					<mainClass>com.sf9000.anagram.AnagramApi</mainClass>
 				</configuration>
 			</plugin>
 			<plugin>
