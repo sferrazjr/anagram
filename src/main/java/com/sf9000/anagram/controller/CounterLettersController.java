@@ -19,7 +19,7 @@ public class CounterLettersController {
     CounterLettersService counterLettersService;
 
     @GetMapping("/letters/{word}")
-    ResponseEntity<Integer> countLetters(@PathVariable String word) throws InvalidInputException {
+    public ResponseEntity<Integer> countLetters(@PathVariable String word) throws InvalidInputException {
 
         ContentUtil.wordInputValidation(word);
 

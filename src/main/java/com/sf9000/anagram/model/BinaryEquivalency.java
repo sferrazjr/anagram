@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class BinaryEquivalency {
 
-    public static final Map<Character, Integer> BINARY_EQUIVALENCY = new HashMap<>();
+    static final Map<Character, Integer> BINARY_EQUIVALENCY = new HashMap<>();
 
     static {
         BinaryEquivalency.BINARY_EQUIVALENCY.put('a', 1);

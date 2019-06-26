@@ -168,10 +168,8 @@ public class AnagramSolverService {
 
         for (char possibleReturnPhraseLetter : possibleReturnPhraseCharArray) {
 
-            Integer letterCount = phraseCountLetterMap.get(possibleReturnPhraseLetter);
-            if (letterCount != null) {
-                phraseCountLetterMap.put(possibleReturnPhraseLetter, --letterCount);
-            }
+            phraseCountLetterMap.computeIfPresent(possibleReturnPhraseLetter, (character, letterCount) -> --letterCount);
+
         }
         return possibleReturnPhrase;
     }

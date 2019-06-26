@@ -1,6 +1,5 @@
 package com.sf9000.anagram.service;
 
-import com.sf9000.anagram.exception.InvalidInputException;
 import com.sf9000.anagram.util.SanitizeUtil;
 import org.springframework.stereotype.Component;
 

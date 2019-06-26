@@ -23,7 +23,7 @@ public class AnagramSolverController {
     AnagramSolverService anagramSolverService;
 
     @GetMapping("/solve/{word}")
-    ResponseEntity<List<String>> solve(@PathVariable String word) throws InvalidInputException {
+    public ResponseEntity<List<String>> solve(@PathVariable String word) throws InvalidInputException {
 
         ContentUtil.wordInputValidation(word);
 
