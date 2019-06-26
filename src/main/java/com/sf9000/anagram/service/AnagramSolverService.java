@@ -38,7 +38,7 @@ public class AnagramSolverService {
 
 
     /**
-     * Creates an alphabetical ordered list of all strings that are anagrams of phrase and are in the dictionary
+     * Creates an alphabetical ordered list of all strings can be anagrams of the phrase and are in the dictionary
      * @param dictionaryWordMap
      * @param phraseWordEquivalency
      * @return
@@ -106,6 +106,16 @@ public class AnagramSolverService {
         return phraseCountMap;
     }
 
+    /**
+     * Uses the anagramWordListOrdered to create a list of phrases that are anagram of phraseToSolve.<BR>
+     *     Recursively gets the returnPhrase to compare with next word of anagramWordListOrdered.
+     * @param anagramWordListOrdered
+     * @param anagramList
+     * @param starterLoop
+     * @param returnPhrase
+     * @param dictionaryWordMap
+     * @param phraseWordEquivalency
+     */
     private void findAnagram(
             List<String> anagramWordListOrdered,
             List<String> anagramList,
@@ -118,25 +128,16 @@ public class AnagramSolverService {
 
             String anagramWord = anagramWordListOrdered.get(i);
 
-            boolean isValidWord = isNumberOfPhraseLetterSmallerThanDictionaryWordLetters(phraseWordEquivalency, dictionaryWordMap.get(anagramWord));
+            boolean isNumberOfLettersValid = isNumberOfPhraseLetterSmallerThanDictionaryWordLetters(phraseWordEquivalency, dictionaryWordMap.get(anagramWord));
 
             String possibleReturnPhrase = returnPhrase;
 
             Map<Character, Integer> phraseCountLetterMap = countLetterOfPhrase(phraseWordEquivalency.getWord().toCharArray());
 
-            if (isValidWord) {
+            if (isNumberOfLettersValid) {
 
-                possibleReturnPhrase = possibleReturnPhrase + " " + anagramWord;
+                possibleReturnPhrase = addsCurrentAnagramToPossibleReturnPhrase(anagramWord, possibleReturnPhrase, phraseCountLetterMap);
 
-                char[] possibleReturnPhraseCharArray = possibleReturnPhrase.replaceAll(" ", "").toCharArray();
-
-                for (char possibleReturnPhraseLetter : possibleReturnPhraseCharArray) {
-
-                    Integer myInteger = phraseCountLetterMap.get(possibleReturnPhraseLetter);
-                    if (myInteger != null) {
-                        phraseCountLetterMap.put(possibleReturnPhraseLetter, --myInteger);
-                    }
-                }
             }
 
             boolean isValidPhrase = true;
@@ -147,16 +148,31 @@ public class AnagramSolverService {
                 }
             }
 
-            int lengthOfReturnPhraseWithOutSpaces = possibleReturnPhrase.replaceAll(" ", "").length();
-            int lengthOfMyPhraseWithOutSpaces = phraseWordEquivalency.getWord().replaceAll(" ", "").length();
+            int lengthOfPossibleReturnPhraseWithOutSpaces = possibleReturnPhrase.replaceAll(" ", "").length();
+            int lengthOfPhraseWithOutSpaces = phraseWordEquivalency.getWord().replaceAll(" ", "").length();
 
-            if (lengthOfReturnPhraseWithOutSpaces < lengthOfMyPhraseWithOutSpaces - 2) {
+            if (lengthOfPossibleReturnPhraseWithOutSpaces < lengthOfPhraseWithOutSpaces - 2) {
                 findAnagram(anagramWordListOrdered, anagramList, i + 1, possibleReturnPhrase, dictionaryWordMap, phraseWordEquivalency);
             }
 
-            if (isValidPhrase && (lengthOfReturnPhraseWithOutSpaces == lengthOfMyPhraseWithOutSpaces)) {
+            if (isValidPhrase && (lengthOfPossibleReturnPhraseWithOutSpaces == lengthOfPhraseWithOutSpaces)) {
                 anagramList.add(possibleReturnPhrase.trim());
             }
         }
+    }
+
+    private String addsCurrentAnagramToPossibleReturnPhrase(String anagramWord, String possibleReturnPhrase, Map<Character, Integer> phraseCountLetterMap) {
+        possibleReturnPhrase = possibleReturnPhrase + " " + anagramWord;
+
+        char[] possibleReturnPhraseCharArray = possibleReturnPhrase.replaceAll(" ", "").toCharArray();
+
+        for (char possibleReturnPhraseLetter : possibleReturnPhraseCharArray) {
+
+            Integer letterCount = phraseCountLetterMap.get(possibleReturnPhraseLetter);
+            if (letterCount != null) {
+                phraseCountLetterMap.put(possibleReturnPhraseLetter, --letterCount);
+            }
+        }
+        return possibleReturnPhrase;
     }
 }
