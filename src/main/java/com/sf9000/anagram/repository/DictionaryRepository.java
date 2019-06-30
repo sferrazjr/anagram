@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
 
 @Repository
@@ -28,7 +29,7 @@ public class DictionaryRepository {
     private void init() throws Exception {
 
         ClassLoader classLoader = getClass().getClassLoader();
-        try (Scanner scanner = new Scanner(new File(classLoader.getResource(fileName).getFile()))) {
+        try (Scanner scanner = new Scanner(new File(Objects.requireNonNull(classLoader.getResource(fileName)).getFile()))) {
             while (scanner.hasNext()) {
                 String word = scanner.nextLine();
                 if (word.length() > 2) {
