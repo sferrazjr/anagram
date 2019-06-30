@@ -24,29 +24,10 @@ public class AnagramApiTest {
     @Autowired
     private MockMvc mockMvc;
 
-    List<String> anagramBestSecret;
     List<String> anagramIT_Crowd;
-    List<String> anagramAschheim;
 
     @PostConstruct
     public void init() {
-        anagramBestSecret = new ArrayList<>();
-        anagramBestSecret.add("beet crests");
-        anagramBestSecret.add("beets crest");
-        anagramBestSecret.add("beret sects");
-        anagramBestSecret.add("berets sect");
-        anagramBestSecret.add("beset crest");
-        anagramBestSecret.add("best erects");
-        anagramBestSecret.add("best secret");
-        anagramBestSecret.add("bests crete");
-        anagramBestSecret.add("bests erect");
-        anagramBestSecret.add("bet erst sec");
-        anagramBestSecret.add("bet rest sec");
-        anagramBestSecret.add("bet secrets");
-        anagramBestSecret.add("bets erects");
-        anagramBestSecret.add("bets secret");
-        anagramBestSecret.add("better cess");
-        anagramBestSecret.add("betters sec");
 
         anagramIT_Crowd = new ArrayList<>();
         anagramIT_Crowd.add("cod writ");
@@ -55,29 +36,7 @@ public class AnagramApiTest {
         anagramIT_Crowd.add("doc writ");
         anagramIT_Crowd.add("tic word");
 
-        anagramAschheim = new ArrayList<>();
-        anagramAschheim.add("aches him");
-        anagramAschheim.add("ash chime");
-        anagramAschheim.add("chase him");
-        anagramAschheim.add("chime has");
-        anagramAschheim.add("hash mice");
-        anagramAschheim.add("hic shame");
-        anagramAschheim.add("mice shah");
-
     }
-
-    @Test
-    @DisplayName("Solve anagram of 'Best Secret' should return HTTP Status 200 and list of 'Best Secret' anagram")
-    public void solveAnagramBestSecret() throws Exception {
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/anagram/solve/Best Secret")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").value(anagramBestSecret));
-
-    }
-
 
     @Test
     @DisplayName("Solve anagram of 'IT-Crowd' has special and upper case character should return HTTP Status 200 and array with 5 elements")
@@ -88,18 +47,6 @@ public class AnagramApiTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$").value(anagramIT_Crowd));
-    }
-
-    @Test
-    @DisplayName("Solve anagram of 'Aschheim' should return HTTP Status 200 and array with 7 elements")
-    public void solveAnagramAschheim() throws Exception {
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/anagram/solve/Aschheim")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").value(anagramAschheim));
-
     }
 
     @Test
