@@ -3,7 +3,6 @@ package com.sf9000.anagram.controller;
 import com.sf9000.anagram.exception.InvalidInputException;
 import com.sf9000.anagram.service.AnagramSolverService;
 import com.sf9000.anagram.util.ContentUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,8 +18,11 @@ import java.util.List;
 @RequestMapping(value = "/anagram")
 public class AnagramSolverController {
 
-    @Autowired
-    AnagramSolverService anagramSolverService;
+    final AnagramSolverService anagramSolverService;
+
+    public AnagramSolverController(AnagramSolverService anagramSolverService) {
+        this.anagramSolverService = anagramSolverService;
+    }
 
     @GetMapping("/solve/{word}")
     public ResponseEntity<List<String>> solve(@PathVariable String word) throws InvalidInputException {

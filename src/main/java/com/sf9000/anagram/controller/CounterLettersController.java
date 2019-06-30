@@ -3,7 +3,6 @@ package com.sf9000.anagram.controller;
 import com.sf9000.anagram.exception.InvalidInputException;
 import com.sf9000.anagram.service.CounterLettersService;
 import com.sf9000.anagram.util.ContentUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,8 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/counter")
 public class CounterLettersController {
 
-    @Autowired
-    CounterLettersService counterLettersService;
+    final CounterLettersService counterLettersService;
+
+    public CounterLettersController(CounterLettersService counterLettersService) {
+        this.counterLettersService = counterLettersService;
+    }
 
     @GetMapping("/letters/{word}")
     public ResponseEntity<Integer> countLetters(@PathVariable String word) throws InvalidInputException {

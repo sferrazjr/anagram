@@ -17,8 +17,11 @@ public class AnagramSolverService {
 
     private static final int MINIMUM_SIZE_OF_INVALID_WORD = 2;
 
-    @Autowired
-    DictionaryRepository dictionaryRepository;
+    final DictionaryRepository dictionaryRepository;
+
+    public AnagramSolverService(DictionaryRepository dictionaryRepository) {
+        this.dictionaryRepository = dictionaryRepository;
+    }
 
     public List<String> solve(final String phraseToSolve) {
 
