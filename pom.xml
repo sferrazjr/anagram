@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.sf9000</groupId>
 	<artifactId>anagram</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<name>anagram</name>
 	<description>Anagram Solver</description>
 
@@ -44,6 +44,11 @@
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.logstash.logback</groupId>
+			<artifactId>logstash-logback-encoder</artifactId>
+			<version>6.1</version>
 		</dependency>
 	</dependencies>
 
